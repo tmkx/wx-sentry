@@ -1,4 +1,4 @@
-import { Event, EventHint, Options, Severity } from '@sentry/types';
+import { Event, EventHint, Options, Severity } from './packages/types';
 import {
   addExceptionMechanism,
   addExceptionTypeValue,
@@ -9,7 +9,7 @@ import {
   isEvent,
   isPlainObject,
   SyncPromise,
-} from '@sentry/utils';
+} from './packages/utils';
 
 import {
   eventFromPlainObject,

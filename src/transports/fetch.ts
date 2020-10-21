@@ -1,10 +1,10 @@
-import { eventToSentryRequest, sessionToSentryRequest } from '@sentry/core';
-import { Event, Response, SentryRequest, Session } from '@sentry/types';
+import { eventToSentryRequest, sessionToSentryRequest } from '../packages/core';
+import { Event, Response, SentryRequest, Session } from '../packages/types';
 import {
   getGlobalObject,
   supportsReferrerPolicy,
   SyncPromise,
-} from '@sentry/utils';
+} from '../packages/utils';
 
 import { BaseTransport } from './base';
 
@@ -70,7 +70,7 @@ export class FetchTransport extends BaseTransport {
       new SyncPromise<Response>((resolve, reject) => {
         global
           .fetch(sentryRequest.url, options)
-          .then((response) => {
+          .then((response: any) => {
             const headers = {
               'x-sentry-rate-limits': response.headers.get(
                 'X-Sentry-Rate-Limits',

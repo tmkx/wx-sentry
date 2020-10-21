@@ -1,6 +1,7 @@
+// TODO: 重写此模块
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { getCurrentHub } from '@sentry/core';
-import { Event, Integration, Severity } from '@sentry/types';
+import { getCurrentHub } from '../packages/core';
+import { Event, Integration, Severity } from '../packages/types';
 import {
   addExceptionMechanism,
   addInstrumentationHandler,
@@ -9,7 +10,7 @@ import {
   isPrimitive,
   isString,
   logger,
-} from '@sentry/utils';
+} from '../packages/utils';
 
 import { eventFromUnknownInput } from '../eventbuilder';
 import { shouldIgnoreOnError } from '../helpers';
@@ -119,6 +120,7 @@ export class GlobalHandlers implements Integration {
           originalException: error,
         });
       },
+      // @ts-ignore
       type: 'error',
     });
 
@@ -185,6 +187,7 @@ export class GlobalHandlers implements Integration {
 
         return;
       },
+      // @ts-ignore
       type: 'unhandledrejection',
     });
 

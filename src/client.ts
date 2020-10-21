@@ -1,5 +1,5 @@
-import { BaseClient, Scope } from '@sentry/core';
-import { Event, EventHint } from '@sentry/types';
+import { BaseClient, Scope } from './packages/core';
+import { Event, EventHint } from './packages/types';
 
 import { MiniAppBackend, MiniAppOptions } from './backend';
 import { Breadcrumbs } from './integrations';

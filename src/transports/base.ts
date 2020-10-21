@@ -1,4 +1,4 @@
-import { API } from '@sentry/core';
+import { API } from '../packages/core';
 import {
   Event,
   Response,
@@ -6,13 +6,13 @@ import {
   Status,
   Transport,
   TransportOptions,
-} from '@sentry/types';
+} from '../packages/types';
 import {
   logger,
   parseRetryAfterHeader,
   PromiseBuffer,
   SentryError,
-} from '@sentry/utils';
+} from '../packages/utils';
 
 /** Base Transport class implementation */
 export abstract class BaseTransport implements Transport {
@@ -63,14 +63,14 @@ export abstract class BaseTransport implements Transport {
     reject,
   }: {
     requestType: SentryRequestType;
-    response: globalThis.Response;
+    response: Response;
     headers: Record<string, string | null>;
     resolve: (
       value?: Response | PromiseLike<Response> | null | undefined,
     ) => void;
     reject: (reason?: unknown) => void;
   }): void {
-    const status = Status.fromHttpCode(response.status);
+    const status = Status.fromHttpCode(response.status as any);
     /**
      * "The name is case-insensitive."
      * https://developer.mozilla.org/en-US/docs/Web/API/Headers/get

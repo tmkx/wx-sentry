@@ -1,5 +1,5 @@
-import { Integration } from '@sentry/types';
-import { fill, getFunctionName, getGlobalObject } from '@sentry/utils';
+import { Integration } from '../packages/types';
+import { fill, getFunctionName, getGlobalObject } from '../packages/utils';
 
 import { wrap } from '../helpers';
 

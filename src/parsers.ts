@@ -1,9 +1,9 @@
-import { Event, Exception, StackFrame } from '@sentry/types';
+import { Event, Exception, StackFrame } from './packages/types';
 import {
   extractExceptionKeysForMessage,
   isEvent,
   normalizeToSize,
-} from '@sentry/utils';
+} from './packages/utils';
 
 import {
   computeStackTrace,

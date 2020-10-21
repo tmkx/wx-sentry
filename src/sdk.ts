@@ -2,8 +2,8 @@ import {
   getCurrentHub,
   initAndBind,
   Integrations as CoreIntegrations,
-} from '@sentry/core';
-import { getGlobalObject, SyncPromise } from '@sentry/utils';
+} from './packages/core';
+import { getGlobalObject, SyncPromise } from './packages/utils';
 
 import { MiniAppOptions } from './backend';
 import { MiniAppClient } from './client';

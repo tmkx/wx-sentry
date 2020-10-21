@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable max-lines */
-import { getCurrentHub } from '@sentry/core';
-import { Event, Integration, Severity } from '@sentry/types';
+import { getCurrentHub } from '../packages/core';
+import { Event, Integration, Severity } from '../packages/types';
 import {
   addInstrumentationHandler,
   getEventDescription,
@@ -9,14 +9,12 @@ import {
   htmlTreeAsString,
   parseUrl,
   safeJoin,
-} from '@sentry/utils';
+} from '../packages/utils';
 
 /** JSDoc */
 interface BreadcrumbsOptions {
   console: boolean;
-  dom: boolean;
   fetch: boolean;
-  history: boolean;
   sentry: boolean;
 }
 
@@ -44,9 +42,7 @@ export class Breadcrumbs implements Integration {
   public constructor(options?: Partial<BreadcrumbsOptions>) {
     this._options = {
       console: true,
-      dom: true,
       fetch: true,
-      history: true,
       sentry: true,
       ...options,
     };
@@ -90,28 +86,12 @@ export class Breadcrumbs implements Integration {
         type: 'console',
       });
     }
-    if (this._options.dom) {
-      addInstrumentationHandler({
-        callback: (...args) => {
-          this._domBreadcrumb(...args);
-        },
-        type: 'dom',
-      });
-    }
     if (this._options.fetch) {
       addInstrumentationHandler({
         callback: (...args) => {
           this._fetchBreadcrumb(...args);
         },
         type: 'fetch',
-      });
-    }
-    if (this._options.history) {
-      addInstrumentationHandler({
-        callback: (...args) => {
-          this._historyBreadcrumb(...args);
-        },
-        type: 'history',
       });
     }
   }

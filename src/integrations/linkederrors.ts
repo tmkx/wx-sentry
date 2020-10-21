@@ -1,12 +1,12 @@
-import { addGlobalEventProcessor, getCurrentHub } from '@sentry/core';
+import { addGlobalEventProcessor, getCurrentHub } from '../packages/core';
 import {
   Event,
   EventHint,
   Exception,
   ExtendedError,
   Integration,
-} from '@sentry/types';
-import { isInstanceOf } from '@sentry/utils';
+} from '../packages/types';
+import { isInstanceOf } from '../packages/utils';
 
 import { exceptionFromStacktrace } from '../parsers';
 import { computeStackTrace } from '../tracekit';

@@ -1,6 +1,12 @@
-import { BaseBackend } from '@sentry/core';
-import { Event, EventHint, Options, Severity, Transport } from '@sentry/types';
-import { supportsFetch } from '@sentry/utils';
+import { BaseBackend } from './packages/core';
+import {
+  Event,
+  EventHint,
+  Options,
+  Severity,
+  Transport,
+} from './packages/types';
+import { supportsFetch } from './packages/utils';
 
 import { eventFromException, eventFromMessage } from './eventbuilder';
 import { FetchTransport } from './transports';

@@ -7,15 +7,15 @@
 
 # Sentry SDK for WeChat MiniApp
 
-## Links
+Sentry SDK 微信小程序版，基于官方 SDK 5.27.0 版修改
 
-- [Official SDK Docs](https://docs.sentry.io/quickstart/)
-- [TypeDoc](http://getsentry.github.io/sentry-javascript/)
+## 链接
 
-## Usage
+- [官方SDK文档](https://docs.sentry.io/platforms/javascript/)
 
-To use this SDK, call `Sentry.init(options)` as early as possible after loading the page. This will initialize the SDK
-and hook into the environment. Note that you can turn off almost all side effects using the respective options.
+## 使用方式 Usage
+
+请在小程序初始化后尽早调用`Sentry.init(options)`。这将初始化 SDK 并注入到小程序环境中。你可以使用相应的选项关闭几乎所有的副作用。
 
 ```javascript
 import Sentry from '@4in/wx-sentry';
@@ -26,14 +26,13 @@ Sentry.init({
 });
 ```
 
-To set context information or send manual events, use the exported functions of `@4in/wx-sentry`. Note that these
-functions will not perform any action before you have called `Sentry.init()`:
+要设置上下文信息或发送手动事件，请使用`@4in/wx-sentry`导出的函数。注意，这些在调用`Sentry.init()`之前，函数不会执行任何操作:
 
 ```javascript
-import Sentry from '@4in/wx-sentry';
+import * as Sentry from '@4in/wx-sentry';
 
 // Set user information, as well as tags and further extras
-Sentry.configureScope(scope => {
+Sentry.configureScope((scope) => {
   scope.setExtra('battery', 0.7);
   scope.setTag('user_mode', 'admin');
   scope.setUser({ id: '4711' });

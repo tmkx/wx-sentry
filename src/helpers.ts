@@ -1,14 +1,11 @@
-import { captureException, withScope } from '@sentry/core';
+import { captureException, withScope } from './packages/core';
 import {
   Event as SentryEvent,
   Mechanism,
   Scope,
   WrappedFunction,
-} from '@sentry/types';
-import {
-  addExceptionMechanism,
-  addExceptionTypeValue,
-} from '@sentry/utils';
+} from './packages/types';
+import { addExceptionMechanism, addExceptionTypeValue } from './packages/utils';
 
 let ignoreOnError: number = 0;
 

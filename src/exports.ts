@@ -13,7 +13,7 @@ export {
   Status,
   Thread,
   User,
-} from '@sentry/types';
+} from './packages/types';
 
 export {
   addGlobalEventProcessor,
@@ -35,7 +35,7 @@ export {
   setTags,
   setUser,
   withScope,
-} from '@sentry/core';
+} from './packages/core';
 
 export { MiniAppOptions } from './backend';
 export { MiniAppClient } from './client';
