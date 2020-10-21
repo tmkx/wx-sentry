@@ -1,0 +1,36 @@
+{
+  "name": "@4in/wx-sentry",
+  "version": "0.0.0",
+  "description": "Sentry SDK for WeChat MiniApp",
+  "author": "Tmk <i@tmk.im>",
+  "license": "BSD-3-Clause",
+  "engines": {
+    "node": ">=6"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "watch": "tsc -p tsconfig.json -w --preserveWatchOutput",
+    "build": "tsc -p tsconfig.json",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@sentry/core": "5.27.0",
+    "@sentry/types": "5.27.0",
+    "@sentry/utils": "5.27.0"
+  },
+  "devDependencies": {
+    "miniprogram-api-typings": "^3.1.3",
+    "prettier": "^2.1.2",
+    "typescript": "^4.0.3"
+  }
+}
