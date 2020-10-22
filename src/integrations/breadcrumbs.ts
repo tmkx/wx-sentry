@@ -1,19 +1,15 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable max-lines */
 import { getCurrentHub } from '../packages/hub';
 import { Event, Integration, Severity } from '../packages/types';
 import {
   addInstrumentationHandler,
   getEventDescription,
-  getGlobalObject,
-  parseUrl,
   safeJoin,
 } from '../packages/utils';
 
 /** JSDoc */
 interface BreadcrumbsOptions {
   console: boolean;
-  fetch: boolean;
+  request: boolean;
   sentry: boolean;
 }
 
@@ -41,7 +37,7 @@ export class Breadcrumbs implements Integration {
   public constructor(options?: Partial<BreadcrumbsOptions>) {
     this._options = {
       console: true,
-      fetch: true,
+      request: true,
       sentry: true,
       ...options,
     };
@@ -79,17 +75,17 @@ export class Breadcrumbs implements Integration {
     if (this._options.console) {
       addInstrumentationHandler({
         callback: (...args) => {
-          this._consoleBreadcrumb(...args);
+          Breadcrumbs._consoleBreadcrumb(...args);
         },
         type: 'console',
       });
     }
-    if (this._options.fetch) {
+    if (this._options.request) {
       addInstrumentationHandler({
         callback: (...args) => {
-          this._fetchBreadcrumb(...args);
+          Breadcrumbs._requestBreadcrumb(...args);
         },
-        type: 'fetch',
+        type: 'request',
       });
     }
   }
@@ -97,8 +93,7 @@ export class Breadcrumbs implements Integration {
   /**
    * Creates breadcrumbs from console API calls
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _consoleBreadcrumb(handlerData: { [key: string]: any }): void {
+  private static _consoleBreadcrumb(handlerData: { [key: string]: any }): void {
     const breadcrumb = {
       category: 'console',
       data: {
@@ -128,11 +123,10 @@ export class Breadcrumbs implements Integration {
   }
 
   /**
-   * Creates breadcrumbs from fetch API calls
+   * Creates breadcrumbs from wx.request API calls
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _fetchBreadcrumb(handlerData: { [key: string]: any }): void {
-    // We only capture complete fetch requests
+  private static _requestBreadcrumb(handlerData: { [key: string]: any }): void {
+    // We only capture complete wx.request requests
     if (!handlerData.endTimestamp) {
       return;
     }
@@ -161,7 +155,7 @@ export class Breadcrumbs implements Integration {
     } else {
       getCurrentHub().addBreadcrumb(
         {
-          category: 'fetch',
+          category: 'request',
           data: {
             ...handlerData.fetchData,
             status_code: handlerData.response.status,
@@ -174,46 +168,5 @@ export class Breadcrumbs implements Integration {
         },
       );
     }
-  }
-
-  /**
-   * Creates breadcrumbs from history API calls
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _historyBreadcrumb(handlerData: { [key: string]: any }): void {
-    const global = getGlobalObject<Window>();
-    let from = handlerData.from;
-    let to = handlerData.to;
-    const parsedLoc = parseUrl(global.location.href);
-    let parsedFrom = parseUrl(from);
-    const parsedTo = parseUrl(to);
-
-    // Initial pushState doesn't provide `from` information
-    if (!parsedFrom.path) {
-      parsedFrom = parsedLoc;
-    }
-
-    // Use only the path component of the URL if the URL matches the current
-    // document (almost all the time when using pushState)
-    if (
-      parsedLoc.protocol === parsedTo.protocol &&
-      parsedLoc.host === parsedTo.host
-    ) {
-      to = parsedTo.relative;
-    }
-    if (
-      parsedLoc.protocol === parsedFrom.protocol &&
-      parsedLoc.host === parsedFrom.host
-    ) {
-      from = parsedFrom.relative;
-    }
-
-    getCurrentHub().addBreadcrumb({
-      category: 'navigation',
-      data: {
-        from,
-        to,
-      },
-    });
   }
 }

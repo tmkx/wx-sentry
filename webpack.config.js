@@ -3,6 +3,7 @@ const npmDtsPlugin = require('npm-dts-webpack-plugin');
 
 module.exports = {
   entry: './src/index.ts',
+  mode: 'production',
   output: {
     path: path.resolve(__dirname, 'dist'),
     filename: 'wx-sentry.js',
@@ -25,6 +26,7 @@ module.exports = {
   },
   plugins: [
     new npmDtsPlugin({
+      logLevel: 'warn',
       output: 'dist/wx-sentry.d.ts',
     }),
   ],

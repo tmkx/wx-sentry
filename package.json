@@ -21,6 +21,7 @@
   "scripts": {
     "watch": "tsc -w --preserveWatchOutput",
     "build": "tsc",
+    "check": "tsc --noEmit",
     "bundle": "rm -rf dist && webpack",
     "format": "prettier --write \"src/**/*.ts\""
   },

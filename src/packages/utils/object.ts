@@ -50,7 +50,17 @@ export function fill(
     }
   }
 
-  source[name] = wrapped;
+  if (Object.defineProperty && Object.getOwnPropertyDescriptor) {
+    const property = Object.getOwnPropertyDescriptor(source, name);
+    if (property && property.configurable === false) {
+      throw Error(`${property} is unconfigurable`);
+    }
+    Object.defineProperty(source, name, {
+      value: wrapped,
+    });
+  } else {
+    source[name] = wrapped;
+  }
 }
 
 /**
@@ -106,6 +116,7 @@ function getWalkSource(
      */
     interface SimpleEvent {
       [key: string]: unknown;
+
       type: string;
       target?: unknown;
       currentTarget?: unknown;
