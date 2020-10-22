@@ -17,39 +17,6 @@ export function supportsErrorEvent(): boolean {
 }
 
 /**
- * Tells whether current environment supports DOMError objects
- * {@link supportsDOMError}.
- *
- * @returns Answer to the given question.
- */
-export function supportsDOMError(): boolean {
-  try {
-    // Chrome: VM89:1 Uncaught TypeError: Failed to construct 'DOMError':
-    // 1 argument required, but only 0 present.
-    // @ts-ignore It really needs 1 argument, not 0.
-    new DOMError('');
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-/**
- * Tells whether current environment supports DOMException objects
- * {@link supportsDOMException}.
- *
- * @returns Answer to the given question.
- */
-export function supportsDOMException(): boolean {
-  try {
-    new DOMException('');
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-/**
  * Tells whether current environment supports Fetch API
  * {@link supportsFetch}.
  *

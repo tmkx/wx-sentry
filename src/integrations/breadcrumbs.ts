@@ -6,7 +6,6 @@ import {
   addInstrumentationHandler,
   getEventDescription,
   getGlobalObject,
-  htmlTreeAsString,
   parseUrl,
   safeJoin,
 } from '../packages/utils';
@@ -73,7 +72,6 @@ export class Breadcrumbs implements Integration {
   /**
    * Instrument browser built-ins w/ breadcrumb capturing
    *  - Console API
-   *  - DOM API (click/typing)
    *  - Fetch API
    *  - History API
    */
@@ -127,38 +125,6 @@ export class Breadcrumbs implements Integration {
       input: handlerData.args,
       level: handlerData.level,
     });
-  }
-
-  /**
-   * Creates breadcrumbs from DOM API calls
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _domBreadcrumb(handlerData: { [key: string]: any }): void {
-    let target;
-
-    // Accessing event.target can throw (see getsentry/raven-js#838, #768)
-    try {
-      target = handlerData.event.target
-        ? htmlTreeAsString(handlerData.event.target as Node)
-        : htmlTreeAsString((handlerData.event as unknown) as Node);
-    } catch (e) {
-      target = '<unknown>';
-    }
-
-    if (target.length === 0) {
-      return;
-    }
-
-    getCurrentHub().addBreadcrumb(
-      {
-        category: `ui.${handlerData.name}`,
-        message: target,
-      },
-      {
-        event: handlerData.event,
-        name: handlerData.name,
-      },
-    );
   }
 
   /**

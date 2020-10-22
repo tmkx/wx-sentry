@@ -2,8 +2,6 @@ import { Event, EventHint, Options, Severity } from './packages/types';
 import {
   addExceptionMechanism,
   addExceptionTypeValue,
-  isDOMError,
-  isDOMException,
   isError,
   isErrorEvent,
   isEvent,
@@ -87,26 +85,6 @@ export function eventFromUnknownInput(
     event = eventFromStacktrace(computeStackTrace(exception as Error));
     return event;
   }
-  if (
-    isDOMError(exception as DOMError) ||
-    isDOMException(exception as DOMException)
-  ) {
-    // If it is a DOMError or DOMException (which are legacy APIs, but still supported in some browsers)
-    // then we just extract the name and message, as they don't provide anything else
-    // https://developer.mozilla.org/en-US/docs/Web/API/DOMError
-    // https://developer.mozilla.org/en-US/docs/Web/API/DOMException
-    const domException = exception as DOMException;
-    const name =
-      domException.name ||
-      (isDOMError(domException) ? 'DOMError' : 'DOMException');
-    const message = domException.message
-      ? `${name}: ${domException.message}`
-      : name;
-
-    event = eventFromString(message, syntheticException, options);
-    addExceptionTypeValue(event, message);
-    return event;
-  }
   if (isError(exception as Error)) {
     // we have a real Error object, do nothing
     event = eventFromStacktrace(computeStackTrace(exception as Error));
@@ -129,8 +107,6 @@ export function eventFromUnknownInput(
   }
 
   // If none of previous checks were valid, then it means that it's not:
-  // - an instance of DOMError
-  // - an instance of DOMException
   // - an instance of Event
   // - an instance of Error
   // - a valid ErrorEvent (one with an error property)

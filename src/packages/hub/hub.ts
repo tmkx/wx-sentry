@@ -27,7 +27,7 @@ import {
   uuid4,
 } from '../../packages/utils';
 
-import { Carrier, DomainAsCarrier, Layer } from './interfaces';
+import { Carrier, Layer } from './interfaces';
 import { Scope } from './scope';
 import { Session } from './session';
 

@@ -13,8 +13,6 @@ export function isError(wat: any): boolean {
       return true;
     case '[object Exception]':
       return true;
-    case '[object DOMException]':
-      return true;
     default:
       return isInstanceOf(wat, Error);
   }
@@ -29,28 +27,6 @@ export function isError(wat: any): boolean {
  */
 export function isErrorEvent(wat: any): boolean {
   return Object.prototype.toString.call(wat) === '[object ErrorEvent]';
-}
-
-/**
- * Checks whether given value's type is DOMError
- * {@link isDOMError}.
- *
- * @param wat A value to be checked.
- * @returns A boolean representing the result.
- */
-export function isDOMError(wat: any): boolean {
-  return Object.prototype.toString.call(wat) === '[object DOMError]';
-}
-
-/**
- * Checks whether given value's type is DOMException
- * {@link isDOMException}.
- *
- * @param wat A value to be checked.
- * @returns A boolean representing the result.
- */
-export function isDOMException(wat: any): boolean {
-  return Object.prototype.toString.call(wat) === '[object DOMException]';
 }
 
 /**

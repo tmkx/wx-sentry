@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { ExtendedError, WrappedFunction } from '../../packages/types';
 
-import { htmlTreeAsString } from './browser';
 import {
   isElement,
   isError,
@@ -122,21 +121,7 @@ function getWalkSource(
     source.type = event.type;
 
     // Accessing event.target can throw (see getsentry/raven-js#838, #768)
-    try {
-      source.target = isElement(event.target)
-        ? htmlTreeAsString(event.target)
-        : Object.prototype.toString.call(event.target);
-    } catch (_oO) {
-      source.target = '<unknown>';
-    }
-
-    try {
-      source.currentTarget = isElement(event.currentTarget)
-        ? htmlTreeAsString(event.currentTarget)
-        : Object.prototype.toString.call(event.currentTarget);
-    } catch (_oO) {
-      source.currentTarget = '<unknown>';
-    }
+    source.currentTarget = '<unknown>';
 
     if (
       typeof CustomEvent !== 'undefined' &&
