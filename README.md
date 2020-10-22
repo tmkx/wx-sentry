@@ -13,7 +13,7 @@ Sentry SDK 微信小程序版，基于官方 SDK 5.27.0 版修改
 
 - [官方 SDK 文档](https://docs.sentry.io/platforms/javascript/)
 
-## 使用方式 Usage
+## 使用方式
 
 请在小程序初始化后尽早调用`Sentry.init(options)`。这将初始化 SDK 并注入到小程序环境中。你可以使用相应的选项关闭几乎所有的副作用。
 

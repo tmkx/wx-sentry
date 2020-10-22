@@ -25,7 +25,7 @@ import {
   getGlobalObject,
   logger,
   uuid4,
-} from '../../packages/utils';
+} from '../utils';
 
 import { Carrier, Layer } from './interfaces';
 import { Scope } from './scope';
@@ -69,7 +69,7 @@ export class Hub implements HubInterface {
    *
    * @param client bound to the hub.
    * @param scope bound to the hub.
-   * @param version number, higher number means higher priority.
+   * @param _version number, higher number means higher priority.
    */
   public constructor(
     client?: Client,

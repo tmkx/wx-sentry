@@ -3,10 +3,10 @@ import {
   SessionContext,
   SessionStatus,
 } from '../../packages/types';
-import { dropUndefinedKeys, uuid4 } from '../../packages/utils';
+import { dropUndefinedKeys, uuid4 } from '../utils';
 
 /**
- * @inheritdoc
+ * @inheritDoc
  */
 export class Session implements SessionInterface {
   public userAgent?: string;
@@ -93,7 +93,7 @@ export class Session implements SessionInterface {
   toJSON(): {
     init: boolean;
     sid: string;
-    did?: string;
+    did?: string | number;
     timestamp: string;
     started: string;
     duration: number;

@@ -1,4 +1,4 @@
-import { Integration, WrappedFunction } from '../../../packages/types';
+import { Integration, WrappedFunction } from '../../types';
 
 let originalFunctionToString: (...args: any[]) => string;
 

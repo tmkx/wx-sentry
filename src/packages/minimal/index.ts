@@ -1,4 +1,4 @@
-import { getCurrentHub, Hub, Scope } from '../../packages/hub';
+import { getCurrentHub, Hub, Scope } from '../hub';
 import {
   Breadcrumb,
   CaptureContext,
@@ -10,7 +10,7 @@ import {
   Transaction,
   TransactionContext,
   User,
-} from '../../packages/types';
+} from '../types';
 
 /**
  * This calls a function on the current hub.
@@ -33,6 +33,7 @@ function callOnHub<T>(method: string, ...args: any[]): T {
  * Captures an exception event and sends it to Sentry.
  *
  * @param exception An exception-like object.
+ * @param captureContext
  * @returns The generated eventId.
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
@@ -40,12 +41,7 @@ export function captureException(
   exception: any,
   captureContext?: CaptureContext,
 ): string {
-  let syntheticException: Error;
-  try {
-    throw new Error('Sentry syntheticException');
-  } catch (exception) {
-    syntheticException = exception as Error;
-  }
+  const syntheticException = new Error('Sentry syntheticException');
   return callOnHub('captureException', exception, {
     captureContext,
     originalException: exception,
@@ -57,19 +53,14 @@ export function captureException(
  * Captures a message event and sends it to Sentry.
  *
  * @param message The message to send to Sentry.
- * @param level Define the level of the message.
+ * @param captureContext Define the level of the message.
  * @returns The generated eventId.
  */
 export function captureMessage(
   message: string,
   captureContext?: CaptureContext | Severity,
 ): string {
-  let syntheticException: Error;
-  try {
-    throw new Error(message);
-  } catch (exception) {
-    syntheticException = exception as Error;
-  }
+  const syntheticException = new Error(message);
 
   // This is necessary to provide explicit scopes upgrade, without changing the original
   // arity of the `captureMessage(message, level)` method.
@@ -194,7 +185,7 @@ export function withScope(callback: (scope: Scope) => void): void {
  * function.
  *
  * @param method The method to call on the client/client.
- * @param args Arguments to pass to the client/fontend.
+ * @param args Arguments to pass to the client/frontend.
  * @hidden
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

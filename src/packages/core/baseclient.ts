@@ -1,5 +1,5 @@
 /* eslint-disable max-lines */
-import { Scope, Session } from '../../packages/hub';
+import { Scope, Session } from '../hub';
 import {
   Client,
   Event,
@@ -9,7 +9,7 @@ import {
   Options,
   SessionStatus,
   Severity,
-} from '../../packages/types';
+} from '../types';
 import {
   dateTimestampInSeconds,
   Dsn,
@@ -21,7 +21,7 @@ import {
   SyncPromise,
   truncate,
   uuid4,
-} from '../../packages/utils';
+} from '../utils';
 
 import { Backend, BackendClass } from './basebackend';
 import { IntegrationIndex, setupIntegrations } from './integration';
@@ -246,7 +246,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
 
       for (const ex of exceptions) {
         const mechanism = ex.mechanism;
-        if (mechanism && mechanism.handled === false) {
+        if (mechanism && !mechanism.handled) {
           crashed = true;
           break;
         }
@@ -356,7 +356,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
     }
 
     return result.then((evt) => {
-      if (typeof normalizeDepth === 'number' && normalizeDepth > 0) {
+      if (normalizeDepth > 0) {
         return this._normalizeEvent(evt, normalizeDepth);
       }
       return evt;
@@ -371,6 +371,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
    * - `contexts`
    * - `extra`
    * @param event Event
+   * @param depth
    * @returns Normalized event
    */
   protected _normalizeEvent(event: Event | null, depth: number): Event | null {
@@ -456,7 +457,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
 
   /**
    * This function adds all used integrations to the SDK info in the event.
-   * @param sdkInfo The sdkInfo of the event that will be filled with all integrations.
+   * @param event The sdkInfo of the event that will be filled with all integrations.
    */
   protected _applyIntegrationsMetadata(event: Event): void {
     const sdkInfo = event.sdk;
@@ -548,7 +549,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
         const isInternalException =
           hint &&
           hint.data &&
-          (hint.data as { __sentry__: boolean }).__sentry__ === true;
+          (hint.data as { __sentry__: boolean }).__sentry__;
         if (isInternalException || isTransaction || !beforeSend) {
           return prepared;
         }

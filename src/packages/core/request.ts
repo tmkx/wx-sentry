@@ -1,4 +1,4 @@
-import { Event, SentryRequest, Session } from '../../packages/types';
+import { Event, SentryRequest, Session } from '../types';
 
 import { API } from './api';
 
@@ -66,8 +66,7 @@ export function eventToSentryRequest(event: Event, api: API): SentryRequest {
     // sending unnecessary bytes.
     //
     // const envelope = `${envelopeHeaders}\n${itemHeaders}\n${req.body}\n`;
-    const envelope = `${envelopeHeaders}\n${itemHeaders}\n${req.body}`;
-    req.body = envelope;
+    req.body = `${envelopeHeaders}\n${itemHeaders}\n${req.body}`;
   }
 
   return req;

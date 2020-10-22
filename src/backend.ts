@@ -6,7 +6,6 @@ import {
   Severity,
   Transport,
 } from './packages/types';
-import { supportsFetch } from './packages/utils';
 
 import { eventFromException, eventFromMessage } from './eventbuilder';
 import { FetchTransport } from './transports';

@@ -1,5 +1,5 @@
-import { Event, Response, Status, Transport } from '../../../packages/types';
-import { SyncPromise } from '../../../packages/utils';
+import { Event, Response, Status, Transport } from '../../types';
+import { SyncPromise } from '../../utils';
 
 /** Noop transport */
 export class NoopTransport implements Transport {

@@ -1,5 +1,5 @@
-import { DsnLike } from '../../packages/types';
-import { Dsn, urlEncode } from '../../packages/utils';
+import { DsnLike } from '../types';
+import { Dsn, urlEncode } from '../utils';
 
 const SENTRY_API_VERSION = '7';
 

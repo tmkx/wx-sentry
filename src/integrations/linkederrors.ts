@@ -1,4 +1,4 @@
-import { addGlobalEventProcessor, getCurrentHub } from '../packages/core';
+import { addGlobalEventProcessor, getCurrentHub } from '../packages/hub';
 import {
   Event,
   EventHint,

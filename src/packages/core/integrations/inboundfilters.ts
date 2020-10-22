@@ -1,6 +1,6 @@
-import { addGlobalEventProcessor, getCurrentHub } from '../../../packages/hub';
-import { Event, Integration } from '../../../packages/types';
-import { getEventDescription, isMatchingPattern, logger } from '../../../packages/utils';
+import { addGlobalEventProcessor, getCurrentHub } from '../../hub';
+import { Event, Integration } from '../../types';
+import { getEventDescription, isMatchingPattern, logger } from '../../utils';
 
 // "Script error." is hard coded into browsers for errors that it can't read.
 // this is the result of a script being pulled in from an external domain and CORS.

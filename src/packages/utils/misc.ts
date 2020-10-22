@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Event, Integration, StackFrame, WrappedFunction } from '../../packages/types';
+import { Event, Integration, StackFrame, WrappedFunction } from '../types';
 
 import { snipLine } from './string';
 
@@ -28,7 +28,7 @@ let globalObject = {};
  * @returns Global scope object
  */
 export function getGlobalObject<T>(): T & SentryGlobal {
-  return globalObject as any as T & SentryGlobal;
+  return (globalObject as any) as T & SentryGlobal;
 }
 
 /**

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable max-lines */
-import { getCurrentHub } from '../packages/core';
+import { getCurrentHub } from '../packages/hub';
 import { Event, Integration, Severity } from '../packages/types';
 import {
   addInstrumentationHandler,

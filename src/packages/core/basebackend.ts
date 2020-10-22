@@ -5,8 +5,8 @@ import {
   Session,
   Severity,
   Transport,
-} from '../../packages/types';
-import { logger, SentryError } from '../../packages/utils';
+} from '../types';
+import { logger, SentryError } from '../utils';
 
 import { NoopTransport } from './transports/noop';
 

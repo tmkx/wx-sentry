@@ -22,7 +22,7 @@ import {
   isPlainObject,
   isThenable,
   SyncPromise,
-} from '../../packages/utils';
+} from '../utils';
 
 import { Session } from './session';
 

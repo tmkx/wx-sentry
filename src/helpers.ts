@@ -32,6 +32,8 @@ export function ignoreNextOnError(): void {
  * function throws an exception.
  *
  * @param fn A function to wrap.
+ * @param options
+ * @param before
  * @returns The wrapped function.
  * @hidden
  */

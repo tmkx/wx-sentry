@@ -1,6 +1,6 @@
-import { getCurrentHub } from '../../packages/hub';
-import { Client, Options } from '../../packages/types';
-import { logger } from '../../packages/utils';
+import { getCurrentHub } from '../hub';
+import { Client, Options } from '../types';
+import { logger } from '../utils';
 
 /** A class object that can instantiate Client objects. */
 export type ClientClass<F extends Client, O extends Options> = new (

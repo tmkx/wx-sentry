@@ -1,6 +1,6 @@
-import { addGlobalEventProcessor, getCurrentHub } from '../../packages/hub';
-import { Integration, Options } from '../../packages/types';
-import { logger } from '../../packages/utils';
+import { addGlobalEventProcessor, getCurrentHub } from '../hub';
+import { Integration, Options } from '../types';
+import { logger } from '../utils';
 
 export const installedIntegrations: string[] = [];
 

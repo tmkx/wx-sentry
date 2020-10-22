@@ -1,7 +1,7 @@
 import { User } from './user';
 
 /**
- * @inheritdoc
+ * @inheritDoc
  */
 export interface Session extends SessionContext {
   /** JSDoc */
@@ -14,7 +14,7 @@ export interface Session extends SessionContext {
   toJSON(): {
     init: boolean;
     sid: string;
-    did?: string;
+    did?: string | number;
     timestamp: string;
     started: string;
     duration: number;

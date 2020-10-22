@@ -1,9 +1,6 @@
 import { eventToSentryRequest, sessionToSentryRequest } from '../packages/core';
 import { Event, Response, SentryRequest, Session } from '../packages/types';
-import {
-  getGlobalObject,
-  SyncPromise,
-} from '../packages/utils';
+import { getGlobalObject, SyncPromise } from '../packages/utils';
 
 import { BaseTransport } from './base';
 

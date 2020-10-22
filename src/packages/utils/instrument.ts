@@ -5,7 +5,6 @@ import { logger } from './logger';
 import { getGlobalObject } from './misc';
 import { fill } from './object';
 import { getFunctionName } from './stacktrace';
-import { supportsNativeFetch } from './supports';
 
 const global = getGlobalObject<Window>();
 
@@ -14,9 +13,7 @@ interface InstrumentHandler {
   type: InstrumentHandlerType;
   callback: InstrumentHandlerCallback;
 }
-type InstrumentHandlerType =
-  | 'console'
-  | 'fetch';
+type InstrumentHandlerType = 'console' | 'fetch';
 type InstrumentHandlerCallback = (data: any) => void;
 
 /**
@@ -103,19 +100,13 @@ function instrumentConsole(): void {
       return;
     }
 
-    fill(console, level, function (
-      originalConsoleLevel: () => any,
-    ): Function {
+    fill(console, level, function (originalConsoleLevel: () => any): Function {
       return function (...args: any[]): void {
         triggerHandlers('console', { args, level });
 
         // this fails for some browsers. :(
         if (originalConsoleLevel) {
-          Function.prototype.apply.call(
-            originalConsoleLevel,
-            console,
-            args,
-          );
+          Function.prototype.apply.call(originalConsoleLevel, console, args);
         }
       };
     });
@@ -124,11 +115,10 @@ function instrumentConsole(): void {
 
 /** JSDoc */
 function instrumentFetch(): void {
-  if (!supportsNativeFetch()) {
-    return;
-  }
-
-  fill(global, 'fetch', function (originalFetch: (...args: any[]) => PromiseLike<any>): () => void {
+  // TODO: rewrite
+  fill(global, 'fetch', function (
+    originalFetch: (...args: any[]) => PromiseLike<any>,
+  ): () => void {
     return function (...args: any[]): PromiseLike<any> {
       const handlerData = {
         args,

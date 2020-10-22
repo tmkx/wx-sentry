@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ExtendedError, WrappedFunction } from '../../packages/types';
+import { ExtendedError, WrappedFunction } from '../types';
 
 import {
-  isElement,
   isError,
   isEvent,
   isInstanceOf,

@@ -1,4 +1,4 @@
-import { Client } from '../../packages/types';
+import { Client } from '../types';
 
 import { Hub } from './hub';
 import { Scope } from './scope';
