@@ -1,13 +1,11 @@
 import { eventToSentryRequest, sessionToSentryRequest } from '../packages/core';
 import { Event, Response, SentryRequest, Session } from '../packages/types';
-import { getGlobalObject, SyncPromise } from '../packages/utils';
+import { SyncPromise } from '../packages/utils';
 
 import { BaseTransport } from './base';
 
-const global = getGlobalObject<Window>();
-
-/** `fetch` based transport */
-export class FetchTransport extends BaseTransport {
+/** `wx.request` based transport */
+export class RequestTransport extends BaseTransport {
   /**
    * @inheritDoc
    */
@@ -44,42 +42,27 @@ export class FetchTransport extends BaseTransport {
       });
     }
 
-    const options: RequestInit = {
-      body: sentryRequest.body,
-      method: 'POST',
-      // Despite all stars in the sky saying that Edge supports old draft syntax, aka 'never', 'always', 'origin' and 'default
-      // https://caniuse.com/#feat=referrer-policy
-      // It doesn't. And it throw exception instead of ignoring this parameter...
-      // REF: https://github.com/getsentry/raven-js/issues/1233
-      referrerPolicy: '',
-    };
-    if (this.options.fetchParameters !== undefined) {
-      Object.assign(options, this.options.fetchParameters);
-    }
-    if (this.options.headers !== undefined) {
-      options.headers = this.options.headers;
-    }
-
     return this._buffer.add(
       new SyncPromise<Response>((resolve, reject) => {
-        global
-          .fetch(sentryRequest.url, options)
-          .then((response: any) => {
+        wx.request({
+          url: sentryRequest.url,
+          method: 'POST',
+          data: sentryRequest.body,
+          success: (res) => {
             const headers = {
-              'x-sentry-rate-limits': response.headers.get(
-                'X-Sentry-Rate-Limits',
-              ),
-              'retry-after': response.headers.get('Retry-After'),
+              'x-sentry-rate-limits': res.header['X-Sentry-Rate-Limits'],
+              'retry-after': res.header['Retry-After'],
             };
             this._handleResponse({
               requestType: sentryRequest.type,
-              response,
+              response: res.data as any,
               headers,
               resolve,
               reject,
             });
-          })
-          .catch(reject);
+          },
+          fail: reject,
+        });
       }),
     );
   }

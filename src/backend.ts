@@ -8,7 +8,7 @@ import {
 } from './packages/types';
 
 import { eventFromException, eventFromMessage } from './eventbuilder';
-import { FetchTransport } from './transports';
+import { RequestTransport } from './transports';
 
 /**
  * Configuration options for the Sentry MiniApp SDK.
@@ -84,6 +84,7 @@ export class MiniAppBackend extends BaseBackend<MiniAppOptions> {
     if (this._options.transport) {
       return new this._options.transport(transportOptions);
     }
-    return new FetchTransport(transportOptions);
+
+    return new RequestTransport(transportOptions);
   }
 }

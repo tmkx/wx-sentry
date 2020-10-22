@@ -434,7 +434,6 @@ export class Hub implements HubInterface {
   ): void {
     const { scope, client } = this.getStackTop();
     if (client && client[method]) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
       (client as any)[method](...args, scope);
     }
   }

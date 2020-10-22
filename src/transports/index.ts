@@ -1,2 +1,2 @@
 export { BaseTransport } from './base';
-export { FetchTransport } from './fetch';
+export { RequestTransport } from './request';
