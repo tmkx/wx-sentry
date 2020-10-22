@@ -16,7 +16,6 @@ export { Options } from './options';
 export { Package } from './package';
 export { Request, SentryRequest, SentryRequestType } from './request';
 export { Response } from './response';
-export { Runtime } from './runtime';
 export { CaptureContext, Scope, ScopeContext } from './scope';
 export { SdkInfo } from './sdkinfo';
 export { Session, SessionContext, SessionStatus } from './session';

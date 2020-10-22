@@ -8,18 +8,15 @@ import { isRegExp, isString } from './is';
  * @returns string Encoded
  */
 export function truncate(str: string, max: number = 0): string {
-  if (typeof str !== 'string' || max === 0) {
-    return str;
-  }
-  return str.length <= max ? str : `${str.substr(0, max)}...`;
+  return (str.length <= max || max === 0) ? str : `${str.substr(0, max)}...`;
 }
 
 /**
  * This is basically just `trim_line` from
  * https://github.com/getsentry/sentry/blob/master/src/sentry/lang/javascript/processor.py#L67
  *
- * @param str An object that contains serializable values
- * @param max Maximum number of characters in truncated string
+ * @param line An object that contains serializable values
+ * @param colno Maximum number of characters in truncated string
  * @returns string Encoded
  */
 export function snipLine(line: string, colno: number): string {

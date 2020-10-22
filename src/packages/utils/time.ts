@@ -75,67 +75,8 @@ function getBrowserPerformance(): Performance | undefined {
 }
 
 /**
- * The Performance API implementation for the current platform, if available.
- */
-const platformPerformance: Performance | undefined = getBrowserPerformance();
-
-const timestampSource: TimestampSource =
-  platformPerformance === undefined
-    ? dateTimestampSource
-    : {
-        nowSeconds: () =>
-          (platformPerformance.timeOrigin + platformPerformance.now()) / 1000,
-      };
-
-/**
  * Returns a timestamp in seconds since the UNIX epoch using the Date API.
  */
 export const dateTimestampInSeconds = dateTimestampSource.nowSeconds.bind(
   dateTimestampSource,
 );
-
-/**
- * Returns a timestamp in seconds since the UNIX epoch using either the Performance or Date APIs, depending on the
- * availability of the Performance API.
- *
- * See `usingPerformanceAPI` to test whether the Performance API is used.
- *
- * BUG: Note that because of how browsers implement the Performance API, the clock might stop when the computer is
- * asleep. This creates a skew between `dateTimestampInSeconds` and `timestampInSeconds`. The
- * skew can grow to arbitrary amounts like days, weeks or months.
- * See https://github.com/getsentry/sentry-javascript/issues/2590.
- */
-export const timestampInSeconds = timestampSource.nowSeconds.bind(
-  timestampSource,
-);
-
-// Re-exported with an old name for backwards-compatibility.
-export const timestampWithMs = timestampInSeconds;
-
-/**
- * A boolean that is true when timestampInSeconds uses the Performance API to produce monotonic timestamps.
- */
-export const usingPerformanceAPI = platformPerformance !== undefined;
-
-/**
- * The number of milliseconds since the UNIX epoch. This value is only usable in a browser, and only when the
- * performance API is available.
- */
-export const browserPerformanceTimeOrigin = ((): number | undefined => {
-  const { performance } = getGlobalObject<Window>();
-  if (!performance) {
-    return undefined;
-  }
-  if (performance.timeOrigin) {
-    return performance.timeOrigin;
-  }
-  // While performance.timing.navigationStart is deprecated in favor of performance.timeOrigin, performance.timeOrigin
-  // is not as widely supported. Namely, performance.timeOrigin is undefined in Safari as of writing.
-  // Also as of writing, performance.timing is not available in Web Workers in mainstream browsers, so it is not always
-  // a valid fallback. In the absence of an initial time provided by the browser, fallback to the current time from the
-  // Date API.
-  // eslint-disable-next-line deprecation/deprecation
-  return (
-    (performance.timing && performance.timing.navigationStart) || Date.now()
-  );
-})();

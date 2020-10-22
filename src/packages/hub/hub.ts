@@ -156,7 +156,6 @@ export class Hub implements HubInterface {
   /**
    * @inheritDoc
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
   public captureException(exception: any, hint?: EventHint): string {
     const eventId = (this._lastEventId = uuid4());
     let finalHint = hint;
@@ -166,12 +165,7 @@ export class Hub implements HubInterface {
     // We don't do this in the client, as it's the lowest level API, and doing this,
     // would prevent user from having full control over direct calls.
     if (!hint) {
-      let syntheticException: Error;
-      try {
-        throw new Error('Sentry syntheticException');
-      } catch (exception) {
-        syntheticException = exception as Error;
-      }
+      const syntheticException = new Error('Sentry syntheticException');
       finalHint = {
         originalException: exception,
         syntheticException,

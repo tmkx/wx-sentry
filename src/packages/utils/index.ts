@@ -1,4 +1,3 @@
-export * from './async';
 export * from './dsn';
 export * from './error';
 export * from './instrument';
@@ -11,6 +10,5 @@ export * from './path';
 export * from './promisebuffer';
 export * from './stacktrace';
 export * from './string';
-export * from './supports';
 export * from './syncpromise';
 export * from './time';

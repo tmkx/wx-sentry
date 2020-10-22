@@ -281,10 +281,10 @@ export function walk(
     return normalized;
   }
 
-  // Create source that we will use for next itterations, either objectified error object (Error type with extracted keys:value pairs) or the input itself
+  // Create source that we will use for next iterations, either objectified error object (Error type with extracted keys:value pairs) or the input itself
   const source = getWalkSource(value);
 
-  // Create an accumulator that will act as a parent for all future itterations of that branch
+  // Create an accumulator that will act as a parent for all future iterations of that branch
   const acc = Array.isArray(value) ? [] : {};
 
   // If we already walked that branch, bail out, as it's circular reference
