@@ -8,7 +8,7 @@ import { isRegExp, isString } from './is';
  * @returns string Encoded
  */
 export function truncate(str: string, max: number = 0): string {
-  return (str.length <= max || max === 0) ? str : `${str.substr(0, max)}...`;
+  return str.length <= max || max === 0 ? str : `${str.substr(0, max)}...`;
 }
 
 /**

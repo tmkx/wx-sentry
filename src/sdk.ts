@@ -28,56 +28,8 @@ export const defaultIntegrations = [
  * The Sentry MiniApp SDK Client.
  *
  * To use this SDK, call the {@link init} function as early as possible when
- * loading the web page. To set context information or send manual events, use
+ * loading the mini app. To set context information or send manual events, use
  * the provided methods.
- *
- * @example
- *
- * ```
- *
- * import { init } from '@sentry/browser';
- *
- * init({
- *   dsn: '__DSN__',
- *   // ...
- * });
- * ```
- *
- * @example
- * ```
- *
- * import { configureScope } from '@sentry/browser';
- * configureScope((scope: Scope) => {
- *   scope.setExtra({ battery: 0.7 });
- *   scope.setTag({ user_mode: 'admin' });
- *   scope.setUser({ id: '4711' });
- * });
- * ```
- *
- * @example
- * ```
- *
- * import { addBreadcrumb } from '@sentry/browser';
- * addBreadcrumb({
- *   message: 'My Breadcrumb',
- *   // ...
- * });
- * ```
- *
- * @example
- *
- * ```
- *
- * import * as Sentry from '@sentry/browser';
- * Sentry.captureMessage('Hello, world!');
- * Sentry.captureException(new Error('Good bye'));
- * Sentry.captureEvent({
- *   message: 'Manual',
- *   stacktrace: [
- *     // ...
- *   ],
- * });
- * ```
  *
  * @see {@link MiniAppOptions} for documentation on configuration options.
  */
@@ -110,22 +62,6 @@ export function init(options: MiniAppOptions = {}): void {
  */
 export function lastEventId(): string | undefined {
   return getCurrentHub().lastEventId();
-}
-
-/**
- * This function is here to be API compatible with the loader.
- * @hidden
- */
-export function forceLoad(): void {
-  // Noop
-}
-
-/**
- * This function is here to be API compatible with the loader.
- * @hidden
- */
-export function onLoad(callback: () => void): void {
-  callback();
 }
 
 /**
@@ -163,7 +99,6 @@ export function close(timeout?: number): PromiseLike<boolean> {
  *
  * @returns The result of wrapped function call.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function wrap(fn: (...args: any) => any): any {
   return internalWrap(fn)();
 }
@@ -172,65 +107,23 @@ export function wrap(fn: (...args: any) => any): any {
  * Enable automatic Session Tracking for the initial page load.
  */
 function startSessionTracking(): void {
-  const window = getGlobalObject<Window>();
   const hub = getCurrentHub();
 
-  /**
-   * We should be using `Promise.all([windowLoaded, firstContentfulPaint])` here,
-   * but, as always, it's not available in the IE10-11. Thanks IE.
-   */
-  let loadResolved = document.readyState === 'complete';
   let fcpResolved = false;
   const possiblyEndSession = (): void => {
-    if (fcpResolved && loadResolved) {
+    if (fcpResolved) {
       hub.endSession();
     }
-  };
-  const resolveWindowLoaded = (): void => {
-    loadResolved = true;
-    possiblyEndSession();
-    window.removeEventListener('load', resolveWindowLoaded);
   };
 
   hub.startSession();
 
-  if (!loadResolved) {
-    // IE doesn't support `{ once: true }` for event listeners, so we have to manually
-    // attach and then detach it once completed.
-    window.addEventListener('load', resolveWindowLoaded);
-  }
-
   try {
-    const po = new PerformanceObserver((entryList, po) => {
-      entryList.getEntries().forEach((entry) => {
-        if (
-          entry.name === 'first-contentful-paint' &&
-          entry.startTime < firstHiddenTime
-        ) {
-          po.disconnect();
-          fcpResolved = true;
-          possiblyEndSession();
-        }
-      });
-    });
-
-    // There's no need to even attach this listener if `PerformanceObserver` constructor will fail,
-    // so we do it below here.
-    let firstHiddenTime = document.visibilityState === 'hidden' ? 0 : Infinity;
-    document.addEventListener(
-      'visibilitychange',
-      (event) => {
-        firstHiddenTime = Math.min(firstHiddenTime, event.timeStamp);
-      },
-      { once: true },
-    );
-
-    po.observe({
-      type: 'paint',
-      buffered: true,
-    });
-  } catch (e) {
+    // TODO: Performance measurement
     fcpResolved = true;
     possiblyEndSession();
+  } catch (e) {
+    // fcpResolved = true;
+    // possiblyEndSession();
   }
 }

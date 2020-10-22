@@ -42,10 +42,8 @@ export { MiniAppClient } from './client';
 export { eventFromException, eventFromMessage } from './eventbuilder';
 export {
   defaultIntegrations,
-  forceLoad,
   init,
   lastEventId,
-  onLoad,
   flush,
   close,
   wrap,
