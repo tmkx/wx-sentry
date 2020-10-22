@@ -2,7 +2,6 @@ import { eventToSentryRequest, sessionToSentryRequest } from '../packages/core';
 import { Event, Response, SentryRequest, Session } from '../packages/types';
 import {
   getGlobalObject,
-  supportsReferrerPolicy,
   SyncPromise,
 } from '../packages/utils';
 
@@ -55,9 +54,7 @@ export class FetchTransport extends BaseTransport {
       // https://caniuse.com/#feat=referrer-policy
       // It doesn't. And it throw exception instead of ignoring this parameter...
       // REF: https://github.com/getsentry/raven-js/issues/1233
-      referrerPolicy: (supportsReferrerPolicy()
-        ? 'origin'
-        : '') as ReferrerPolicy,
+      referrerPolicy: '',
     };
     if (this.options.fetchParameters !== undefined) {
       Object.assign(options, this.options.fetchParameters);

@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/ban-types */
-import { WrappedFunction } from '../../packages/types';
-
-import { isInstanceOf, isString } from './is';
+import { isInstanceOf } from './is';
 import { logger } from './logger';
 import { getGlobalObject } from './misc';
 import { fill } from './object';
@@ -18,15 +16,13 @@ interface InstrumentHandler {
 }
 type InstrumentHandlerType =
   | 'console'
-  | 'fetch'
-  | 'xhr';
+  | 'fetch';
 type InstrumentHandlerCallback = (data: any) => void;
 
 /**
  * Instrument native APIs to call handlers that can be used to create breadcrumbs, APM spans etc.
  *  - Console API
  *  - Fetch API
- *  - XHR API
  */
 
 const handlers: {
@@ -45,9 +41,6 @@ function instrument(type: InstrumentHandlerType): void {
   switch (type) {
     case 'console':
       instrumentConsole();
-      break;
-    case 'xhr':
-      instrumentXHR();
       break;
     case 'fetch':
       instrumentFetch();
@@ -98,7 +91,8 @@ function triggerHandlers(type: InstrumentHandlerType, data: any): void {
 
 /** JSDoc */
 function instrumentConsole(): void {
-  if (!('console' in window)) {
+  // TODO: REMOVE judgement
+  if (!(typeof console === 'undefined')) {
     return;
   }
 
@@ -119,7 +113,7 @@ function instrumentConsole(): void {
         if (originalConsoleLevel) {
           Function.prototype.apply.call(
             originalConsoleLevel,
-            window.console,
+            console,
             args,
           );
         }
@@ -175,25 +169,6 @@ function instrumentFetch(): void {
   });
 }
 
-type XHRSendInput =
-  | null
-  | Blob
-  | BufferSource
-  | FormData
-  | URLSearchParams
-  | string;
-
-/** JSDoc */
-interface SentryWrappedXMLHttpRequest extends XMLHttpRequest {
-  [key: string]: any;
-  __sentry_xhr__?: {
-    method?: string;
-    url?: string;
-    status_code?: number;
-    body?: XHRSendInput;
-  };
-}
-
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /** Extract `method` from fetch call arguments */
 function getFetchMethod(fetchArgs: any[] = []): string {
@@ -221,109 +196,6 @@ function getFetchUrl(fetchArgs: any[] = []): string {
   return String(fetchArgs[0]);
 }
 /* eslint-enable @typescript-eslint/no-unsafe-member-access */
-
-/** JSDoc */
-function instrumentXHR(): void {
-  if (!('XMLHttpRequest' in global)) {
-    return;
-  }
-
-  // Poor man's implementation of ES6 `Map`, tracking and keeping in sync key and value separately.
-  const requestKeys: XMLHttpRequest[] = [];
-  const requestValues: Array<any>[] = [];
-  const xhrproto = XMLHttpRequest.prototype;
-
-  fill(xhrproto, 'open', function (originalOpen: (...args: any[]) => void): () => void {
-    return function (this: SentryWrappedXMLHttpRequest, ...args: any[]): void {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      const xhr = this;
-      const url = args[1];
-      xhr.__sentry_xhr__ = {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        method: isString(args[0]) ? args[0].toUpperCase() : args[0],
-        url: args[1],
-      };
-
-      // if Sentry key appears in URL, don't capture it as a request
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (
-        isString(url) &&
-        xhr.__sentry_xhr__.method === 'POST' &&
-        url.match(/sentry_key/)
-      ) {
-        xhr.__sentry_own_request__ = true;
-      }
-
-      const onreadystatechangeHandler = function (): void {
-        if (xhr.readyState === 4) {
-          try {
-            // touching statusCode in some platforms throws
-            // an exception
-            if (xhr.__sentry_xhr__) {
-              xhr.__sentry_xhr__.status_code = xhr.status;
-            }
-          } catch (e) {
-            /* do nothing */
-          }
-
-          try {
-            const requestPos = requestKeys.indexOf(xhr);
-            if (requestPos !== -1) {
-              // Make sure to pop both key and value to keep it in sync.
-              requestKeys.splice(requestPos);
-              const args = requestValues.splice(requestPos)[0];
-              if (xhr.__sentry_xhr__ && args[0] !== undefined) {
-                xhr.__sentry_xhr__.body = args[0] as XHRSendInput;
-              }
-            }
-          } catch (e) {
-            /* do nothing */
-          }
-
-          triggerHandlers('xhr', {
-            args,
-            endTimestamp: Date.now(),
-            startTimestamp: Date.now(),
-            xhr,
-          });
-        }
-      };
-
-      if (
-        'onreadystatechange' in xhr &&
-        typeof xhr.onreadystatechange === 'function'
-      ) {
-        fill(xhr, 'onreadystatechange', function (
-          original: WrappedFunction,
-        ): Function {
-          return function (...readyStateArgs: any[]): void {
-            onreadystatechangeHandler();
-            return original.apply(xhr, readyStateArgs);
-          };
-        });
-      } else {
-        xhr.addEventListener('readystatechange', onreadystatechangeHandler);
-      }
-
-      return originalOpen.apply(xhr, args);
-    };
-  });
-
-  fill(xhrproto, 'send', function (originalSend: (...args: any[]) => void): () => void {
-    return function (this: SentryWrappedXMLHttpRequest, ...args: any[]): void {
-      requestKeys.push(this);
-      requestValues.push(args);
-
-      triggerHandlers('xhr', {
-        args,
-        startTimestamp: Date.now(),
-        xhr: this,
-      });
-
-      return originalSend.apply(this, args);
-    };
-  });
-}
 
 const debounceDuration: number = 1000;
 let debounceTimer: number = 0;

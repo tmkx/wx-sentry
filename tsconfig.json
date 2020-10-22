@@ -9,6 +9,7 @@
     "declaration": true,
     "removeComments": true,
     "forceConsistentCasingInFileNames": true,
+    "allowSyntheticDefaultImports": true,
     "moduleResolution": "Node",
     "typeRoots": ["node_modules/@types"],
     "types": ["miniprogram-api-typings"]

@@ -11,7 +11,7 @@ Sentry SDK 微信小程序版，基于官方 SDK 5.27.0 版修改
 
 ## 链接
 
-- [官方SDK文档](https://docs.sentry.io/platforms/javascript/)
+- [官方 SDK 文档](https://docs.sentry.io/platforms/javascript/)
 
 ## 使用方式 Usage
 
