@@ -103,18 +103,6 @@ export class Breadcrumbs implements Integration {
       message: safeJoin(handlerData.args, ' '),
     };
 
-    if (handlerData.level === 'assert') {
-      if (handlerData.args[0] === false) {
-        breadcrumb.message = `Assertion failed: ${
-          safeJoin(handlerData.args.slice(1), ' ') || 'console.assert'
-        }`;
-        breadcrumb.data.arguments = handlerData.args.slice(1);
-      } else {
-        // Don't capture a breadcrumb for passed assertions
-        return;
-      }
-    }
-
     getCurrentHub().addBreadcrumb(breadcrumb, {
       input: handlerData.args,
       level: handlerData.level,

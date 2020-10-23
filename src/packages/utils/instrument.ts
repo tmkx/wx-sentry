@@ -78,7 +78,7 @@ function triggerHandlers(type: InstrumentHandlerType, data: any): void {
 
 /** JSDoc */
 function instrumentConsole(): void {
-  ['debug', 'info', 'warn', 'error', 'log', 'assert'].forEach(function (
+  ['debug', 'info', 'warn', 'error', 'log'].forEach(function (
     level: string,
   ): void {
     if (!(level in console)) {

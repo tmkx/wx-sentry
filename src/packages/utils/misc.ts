@@ -81,12 +81,7 @@ interface ExtensibleConsole extends Console {
 
 /** JSDoc */
 export function consoleSandbox(callback: () => any): any {
-  const levels = ['debug', 'info', 'warn', 'error', 'log', 'assert'];
-
-  // TODO: remove
-  if (typeof console === 'undefined') {
-    return callback();
-  }
+  const levels = ['debug', 'info', 'warn', 'error', 'log'];
 
   const originalConsole = console as ExtensibleConsole;
   const wrappedLevels: { [key: string]: any } = {};
