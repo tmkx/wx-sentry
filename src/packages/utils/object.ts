@@ -6,7 +6,6 @@ import {
   isInstanceOf,
   isPlainObject,
   isPrimitive,
-  isSyntheticEvent,
 } from './is';
 import { Memo } from './memo';
 import { getFunctionName } from './stacktrace';

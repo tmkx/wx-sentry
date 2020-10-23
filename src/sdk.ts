@@ -73,7 +73,10 @@ export function init(options: MiniAppOptions = {}): void {
       >;
       options.defaultReportSystemInfos.forEach((key) => {
         if (key in systemInfos) {
-          scope.setTag(`App ${key.replace(/^[a-z]/, c => c.toUpperCase())}`, systemInfos[key])
+          scope.setTag(
+            `App ${key.replace(/^[a-z]/, (c) => c.toUpperCase())}`,
+            systemInfos[key],
+          );
         }
       });
     }

@@ -91,21 +91,6 @@ export function isThenable(wat: any): boolean {
 }
 
 /**
- * Checks whether given value's type is a SyntheticEvent
- * {@link isSyntheticEvent}.
- *
- * @param wat A value to be checked.
- * @returns A boolean representing the result.
- */
-export function isSyntheticEvent(wat: any): boolean {
-  return (
-    isPlainObject(wat) &&
-    'nativeEvent' in wat &&
-    'preventDefault' in wat &&
-    'stopPropagation' in wat
-  );
-}
-/**
  * Checks whether given value's type is an instance of provided constructor.
  * {@link isInstanceOf}.
  *
