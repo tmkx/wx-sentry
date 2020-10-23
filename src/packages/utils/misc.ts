@@ -1,35 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Event, Integration, StackFrame, WrappedFunction } from '../types';
+import { Event, StackFrame, WrappedFunction } from '../types';
 
 import { snipLine } from './string';
-
-/** Internal */
-interface SentryGlobal {
-  Sentry?: {
-    Integrations?: Integration[];
-  };
-  SENTRY_ENVIRONMENT?: string;
-  SENTRY_DSN?: string;
-  SENTRY_RELEASE?: {
-    id?: string;
-  };
-  __SENTRY__: {
-    globalEventProcessors: any;
-    hub: any;
-    logger: any;
-  };
-}
-
-let globalObject = {};
-
-/**
- * Safely get global scope object
- *
- * @returns Global scope object
- */
-export function getGlobalObject<T>(): T & SentryGlobal {
-  return (globalObject as any) as T & SentryGlobal;
-}
 
 /**
  * UUID4 generator

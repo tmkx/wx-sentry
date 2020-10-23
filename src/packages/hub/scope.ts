@@ -18,7 +18,6 @@ import {
 } from '../../packages/types';
 import {
   dateTimestampInSeconds,
-  getGlobalObject,
   isPlainObject,
   isThenable,
   SyncPromise,
@@ -496,14 +495,11 @@ export class Scope implements ScopeInterface {
 }
 
 /**
- * Retruns the global event processors.
+ * Returns the global event processors.
  */
 function getGlobalEventProcessors(): EventProcessor[] {
-  const global = getGlobalObject<Window>();
-  global.__SENTRY__ = global.__SENTRY__ || {};
-  global.__SENTRY__.globalEventProcessors =
-    global.__SENTRY__.globalEventProcessors || [];
-  return global.__SENTRY__.globalEventProcessors;
+  wx.__SENTRY__ ||= {};
+  return (wx.__SENTRY__.globalEventProcessors ||= []);
 }
 
 /**

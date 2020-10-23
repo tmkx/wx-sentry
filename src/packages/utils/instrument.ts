@@ -85,14 +85,11 @@ function instrumentConsole(): void {
       return;
     }
 
-    fill(console, level, function (originalConsoleLevel: () => any): Function {
+    fill(console, level, function (originalConsoleLevel: (...args: any[]) => any): Function {
       return function (...args: any[]): void {
         triggerHandlers('console', { args, level });
 
-        // this fails for some browsers. :(
-        if (originalConsoleLevel) {
-          Function.prototype.apply.call(originalConsoleLevel, console, args);
-        }
+        originalConsoleLevel.apply(console, args);
       };
     });
   });

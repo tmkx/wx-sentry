@@ -11,3 +11,21 @@ interface ErrorConstructor {
 
   stackTraceLimit: number;
 }
+
+declare namespace WechatMiniprogram {
+  interface Wx {
+    Sentry?: {
+      Integrations?: any[];
+    };
+    SENTRY_ENVIRONMENT?: string;
+    SENTRY_DSN?: string;
+    SENTRY_RELEASE?: {
+      id?: string;
+    };
+    __SENTRY__: {
+      globalEventProcessors?: any;
+      hub?: any;
+      logger?: any;
+    };
+  }
+}

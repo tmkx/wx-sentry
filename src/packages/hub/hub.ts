@@ -22,7 +22,6 @@ import {
 import {
   consoleSandbox,
   dateTimestampInSeconds,
-  getGlobalObject,
   logger,
   uuid4,
 } from '../utils';
@@ -459,7 +458,7 @@ export class Hub implements HubInterface {
 
 /** Returns the global shim registry. */
 export function getMainCarrier(): Carrier {
-  const carrier = getGlobalObject();
+  const carrier = wx;
   carrier.__SENTRY__ = carrier.__SENTRY__ || {
     extensions: {},
     hub: undefined,
