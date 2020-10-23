@@ -80,7 +80,6 @@ export function eventFromUnknownInput(
   ) {
     // If it is an ErrorEvent with `error` property, extract it to get actual Error
     const errorEvent = exception as ErrorEvent;
-    // eslint-disable-next-line no-param-reassign
     exception = errorEvent.error;
     event = eventFromStacktrace(computeStackTrace(exception as Error));
     return event;

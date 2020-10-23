@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import {
   Breadcrumb,
   CaptureContext,
@@ -208,7 +207,6 @@ export class Scope implements ScopeInterface {
    */
   public setContext(key: string, context: Context | null): this {
     if (context === null) {
-      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       delete this._contexts[key];
     } else {
       this._contexts = { ...this._contexts, [key]: context };
@@ -304,7 +302,6 @@ export class Scope implements ScopeInterface {
         this._fingerprint = captureContext._fingerprint;
       }
     } else if (isPlainObject(captureContext)) {
-      // eslint-disable-next-line no-param-reassign
       captureContext = captureContext as ScopeContext;
       this._tags = { ...this._tags, ...captureContext.tags };
       this._extra = { ...this._extra, ...captureContext.extra };

@@ -34,7 +34,6 @@ function callOnHub<T>(method: string, ...args: any[]): T {
  * @param captureContext
  * @returns The generated eventId.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
 export function captureException(
   exception: any,
   captureContext?: CaptureContext,
@@ -108,7 +107,6 @@ export function addBreadcrumb(breadcrumb: Breadcrumb): void {
  * @param name of the context
  * @param context Any kind of data. This data will be normalized.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function setContext(
   name: string,
   context: { [key: string]: any } | null,
@@ -186,7 +184,6 @@ export function withScope(callback: (scope: Scope) => void): void {
  * @param args Arguments to pass to the client/frontend.
  * @hidden
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function _callOnClient(method: string, ...args: any[]): void {
   callOnHub<void>('_invokeClient', method, ...args);
 }

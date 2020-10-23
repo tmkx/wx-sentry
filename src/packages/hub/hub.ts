@@ -303,7 +303,6 @@ export class Hub implements HubInterface {
   /**
    * @inheritDoc
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public setContext(
     name: string,
     context: { [key: string]: any } | null,
@@ -424,7 +423,6 @@ export class Hub implements HubInterface {
    * @param method The method to call on the client.
    * @param args Arguments to pass to the client function.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _invokeClient<M extends keyof Client>(
     method: M,
     ...args: any[]
@@ -439,7 +437,6 @@ export class Hub implements HubInterface {
    * Calls global extension method and binding current instance to the function call
    */
   // @ts-ignore Function lacks ending return statement and return type does not include 'undefined'. ts(2366)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private _callExtensionMethod<T>(method: string, ...args: any[]): T {
     const carrier = getMainCarrier();
     const sentry = carrier.__SENTRY__;

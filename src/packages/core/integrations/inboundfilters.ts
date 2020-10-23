@@ -175,18 +175,14 @@ export class InboundFilters implements Integration {
   ): Partial<InboundFiltersOptions> {
     return {
       allowUrls: [
-        // eslint-disable-next-line deprecation/deprecation
         ...(this._options.whitelistUrls || []),
         ...(this._options.allowUrls || []),
-        // eslint-disable-next-line deprecation/deprecation
         ...(clientOptions.whitelistUrls || []),
         ...(clientOptions.allowUrls || []),
       ],
       denyUrls: [
-        // eslint-disable-next-line deprecation/deprecation
         ...(this._options.blacklistUrls || []),
         ...(this._options.denyUrls || []),
-        // eslint-disable-next-line deprecation/deprecation
         ...(clientOptions.blacklistUrls || []),
         ...(clientOptions.denyUrls || []),
       ],

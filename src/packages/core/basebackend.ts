@@ -32,7 +32,6 @@ import { NoopTransport } from './transports/noop';
  */
 export interface Backend {
   /** Creates a {@link Event} from an exception. */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   eventFromException(exception: any, hint?: EventHint): PromiseLike<Event>;
 
   /** Creates a {@link Event} from a plain message. */
@@ -88,7 +87,6 @@ export abstract class BaseBackend<O extends Options> implements Backend {
   /**
    * @inheritDoc
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
   public eventFromException(
     _exception: any,
     _hint?: EventHint,

@@ -11,18 +11,15 @@ function normalizeArray(parts: string[], allowAboveRoot?: boolean): string[] {
       parts.splice(i, 1);
     } else if (last === '..') {
       parts.splice(i, 1);
-      // eslint-disable-next-line no-plusplus
       up++;
     } else if (up) {
       parts.splice(i, 1);
-      // eslint-disable-next-line no-plusplus
       up--;
     }
   }
 
   // if the path is allowed to go above the root, restore leading ..s
   if (allowAboveRoot) {
-    // eslint-disable-next-line no-plusplus
     for (; up--; up) {
       parts.unshift('..');
     }
@@ -97,10 +94,8 @@ function trim(arr: string[]): string[] {
 // posix version
 /** JSDoc */
 export function relative(from: string, to: string): string {
-  /* eslint-disable no-param-reassign */
   from = resolve(from).substr(1);
   to = resolve(to).substr(1);
-  /* eslint-enable no-param-reassign */
 
   const fromParts = trim(from.split('/'));
   const toParts = trim(to.split('/'));

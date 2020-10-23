@@ -1,5 +1,4 @@
 // TODO: 重写此模块
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { getCurrentHub } from '../packages/hub';
 import { Event, Integration, Severity } from '../packages/types';
 import {
@@ -74,7 +73,6 @@ export class GlobalHandlers implements Integration {
     }
 
     addInstrumentationHandler({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       callback: (data: {
         msg: any;
         url: any;
@@ -134,7 +132,6 @@ export class GlobalHandlers implements Integration {
     }
 
     addInstrumentationHandler({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       callback: (e: any) => {
         let error = e;
 

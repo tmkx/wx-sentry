@@ -3,8 +3,6 @@
  * largely modified and is now maintained as part of Sentry JS SDK.
  */
 
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-
 /**
  * An object representing a single stack frame.
  * {Object} StackFrame
@@ -54,7 +52,6 @@ const chromeEval = /\((\S*)(?::(\d+))(?::(\d+))\)/;
 const reactMinifiedRegexp = /Minified React error #\d+;/i;
 
 /** JSDoc */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
 export function computeStackTrace(ex: any): StackTrace {
   let stack = null;
   let popSize = 0;
@@ -97,7 +94,6 @@ export function computeStackTrace(ex: any): StackTrace {
 }
 
 /** JSDoc */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any, complexity
 function computeStackTraceFromStackProp(ex: any): StackTrace | null {
   if (!ex || !ex.stack) {
     return null;
@@ -185,7 +181,6 @@ function computeStackTraceFromStackProp(ex: any): StackTrace | null {
 }
 
 /** JSDoc */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function computeStackTraceFromStacktraceProp(ex: any): StackTrace | null {
   if (!ex || !ex.stacktrace) {
     return null;
@@ -256,7 +251,6 @@ function popFrames(stacktrace: StackTrace, popSize: number): StackTrace {
  * https://github.com/getsentry/sentry-javascript/issues/1949
  * In this specific case we try to extract stacktrace.message.error.message
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function extractMessage(ex: any): string {
   const message = ex && ex.message;
   if (!message) {

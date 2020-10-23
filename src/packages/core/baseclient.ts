@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { Scope, Session } from '../hub';
 import {
   Client,
@@ -97,7 +96,6 @@ export abstract class BaseClient<B extends Backend, O extends Options>
   /**
    * @inheritDoc
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
   public captureException(
     exception: any,
     hint?: EventHint,
@@ -407,7 +405,6 @@ export abstract class BaseClient<B extends Backend, O extends Options>
     // so this block overwrites the normalized event to add back the original
     // Transaction information prior to normalization.
     if (event.contexts && event.contexts.trace) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       normalized.contexts.trace = event.contexts.trace;
     }
     return normalized;
@@ -515,7 +512,6 @@ export abstract class BaseClient<B extends Backend, O extends Options>
     hint?: EventHint,
     scope?: Scope,
   ): PromiseLike<Event> {
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     const { beforeSend, sampleRate } = this.getOptions();
 
     if (!this._isEnabled()) {

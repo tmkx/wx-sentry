@@ -24,7 +24,6 @@ export interface Carrier {
      */
     extensions?: {
       /** Extension methods for the hub, which are bound to the current Hub instance */
-      // eslint-disable-next-line @typescript-eslint/ban-types
       [key: string]: Function;
     };
   };

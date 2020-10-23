@@ -43,7 +43,6 @@ export function wrap(
     mechanism?: Mechanism;
   } = {},
   before?: WrappedFunction,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): any {
   if (typeof fn !== 'function') {
     return fn;
@@ -66,8 +65,6 @@ export function wrap(
     return fn;
   }
 
-  /* eslint-disable prefer-rest-params */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sentryWrapped: WrappedFunction = function (this: any): void {
     const args = Array.prototype.slice.call(arguments);
 
@@ -76,7 +73,6 @@ export function wrap(
         before.apply(this, arguments);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access
       const wrappedArguments = args.map((arg: any) => wrap(arg, options));
 
       if (fn.handleEvent) {
@@ -84,7 +80,6 @@ export function wrap(
         // NOTE: If you are a Sentry user, and you are seeing this stack frame, it
         //       means the sentry.javascript SDK caught an error invoking your application code. This
         //       is expected behavior and NOT indicative of a bug with sentry.javascript.
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         return fn.handleEvent.apply(this, wrappedArguments);
       }
       // Attempt to invoke user-land function
@@ -118,7 +113,6 @@ export function wrap(
       throw ex;
     }
   };
-  /* eslint-enable prefer-rest-params */
 
   // Accessing some objects may throw
   // ref: https://github.com/getsentry/sentry-javascript/issues/1168
@@ -128,7 +122,7 @@ export function wrap(
         sentryWrapped[property] = fn[property];
       }
     }
-  } catch (_oO) {} // eslint-disable-line no-empty
+  } catch (_oO) {}
 
   fn.prototype = fn.prototype || {};
   sentryWrapped.prototype = fn.prototype;
@@ -164,7 +158,6 @@ export function wrap(
         },
       });
     }
-    // eslint-disable-next-line no-empty
   } catch (_oO) {}
 
   return sentryWrapped;

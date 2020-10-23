@@ -5,7 +5,6 @@ export const setPrototypeOf =
 /**
  * setPrototypeOf polyfill using __proto__
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 function setProtoOf<TTarget extends object, TProto>(
   obj: TTarget,
   proto: TProto,
@@ -18,13 +17,11 @@ function setProtoOf<TTarget extends object, TProto>(
 /**
  * setPrototypeOf polyfill using mixin
  */
-// eslint-disable-next-line @typescript-eslint/ban-types
 function mixinProperties<TTarget extends object, TProto>(
   obj: TTarget,
   proto: TProto,
 ): TTarget & TProto {
   for (const prop in proto) {
-    // eslint-disable-next-line no-prototype-builtins
     if (!obj.hasOwnProperty(prop)) {
       // @ts-ignore typescript complains about indexing so we remove
       obj[prop] = proto[prop];

@@ -28,7 +28,6 @@ export class Session implements SessionInterface {
   }
 
   /** JSDoc */
-  // eslint-disable-next-line complexity
   update(context: SessionContext = {}): void {
     if (context.user) {
       if (context.user.ip_address) {

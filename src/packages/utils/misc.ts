@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Event, StackFrame, WrappedFunction } from '../types';
 
 import { snipLine } from './string';
@@ -88,7 +87,6 @@ export function consoleSandbox(callback: () => any): any {
 
   // Restore all wrapped console methods
   levels.forEach((level) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     if (
       level in console &&
       (originalConsole[level] as WrappedFunction).__sentry_original__
@@ -147,12 +145,10 @@ export function addExceptionMechanism(
   // TODO: Use real type with `keyof Mechanism` thingy and maybe make it better?
   try {
     // @ts-ignore Type 'Mechanism | {}' is not assignable to type 'Mechanism | undefined'
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     event.exception!.values![0].mechanism =
       event.exception!.values![0].mechanism || {};
     Object.keys(mechanism).forEach((key) => {
       // @ts-ignore Mechanism has no index signature
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       event.exception!.values![0].mechanism[key] = mechanism[key];
     });
   } catch (_oO) {
@@ -268,6 +264,5 @@ export function addContextToFrame(
  * @returns URL or path without query string or fragment
  */
 export function stripUrlQueryAndFragment(urlPath: string): string {
-  // eslint-disable-next-line no-useless-escape
   return urlPath.split(/[\?#]/, 1)[0];
 }

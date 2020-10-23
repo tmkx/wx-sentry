@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /**
  * Memo class used for decycle json objects. Uses WeakSet if available otherwise array.
  */
@@ -27,7 +24,6 @@ export class Memo {
       this._inner.add(obj);
       return false;
     }
-    // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let i = 0; i < this._inner.length; i++) {
       const value = this._inner[i];
       if (value === obj) {
