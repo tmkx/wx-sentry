@@ -1,11 +1,9 @@
-// TODO: 重写此模块
 import { getCurrentHub } from '../packages/hub';
 import { Event, Integration, Severity } from '../packages/types';
 import {
   addExceptionMechanism,
   addInstrumentationHandler,
-  getLocationHref,
-  isErrorEvent,
+  getCurrentPageRoute,
   isPrimitive,
   isString,
   logger,
@@ -16,8 +14,8 @@ import { shouldIgnoreOnError } from '../helpers';
 
 /** JSDoc */
 interface GlobalHandlersIntegrations {
-  onerror: boolean;
-  onunhandledrejection: boolean;
+  onError: boolean;
+  onUnhandledRejection: boolean;
 }
 
 /** Global handlers */
@@ -44,8 +42,8 @@ export class GlobalHandlers implements Integration {
   /** JSDoc */
   public constructor(options?: GlobalHandlersIntegrations) {
     this._options = {
-      onerror: true,
-      onunhandledrejection: true,
+      onError: true,
+      onUnhandledRejection: true,
       ...options,
     };
   }
@@ -55,13 +53,13 @@ export class GlobalHandlers implements Integration {
   public setupOnce(): void {
     Error.stackTraceLimit = 50;
 
-    if (this._options.onerror) {
-      logger.log('Global Handler attached: onerror');
+    if (this._options.onError) {
+      logger.log('Global Handler attached: onError');
       this._installGlobalOnErrorHandler();
     }
 
-    if (this._options.onunhandledrejection) {
-      logger.log('Global Handler attached: onunhandledrejection');
+    if (this._options.onUnhandledRejection) {
+      logger.log('Global Handler attached: onUnhandledRejection');
       this._installGlobalOnUnhandledRejectionHandler();
     }
   }
@@ -74,11 +72,11 @@ export class GlobalHandlers implements Integration {
 
     addInstrumentationHandler({
       callback: (data: {
-        msg: any;
-        url: any;
-        line: any;
-        column: any;
         error: any;
+        msg?: any;
+        url?: any;
+        line?: any;
+        column?: any;
       }) => {
         const error = data.error;
         const currentHub = getCurrentHub();
@@ -91,34 +89,26 @@ export class GlobalHandlers implements Integration {
         }
 
         const client = currentHub.getClient();
-        const event = isPrimitive(error)
-          ? GlobalHandlers._eventFromIncompleteOnError(
-              data.msg,
-              data.url,
-              data.line,
-              data.column,
-            )
-          : GlobalHandlers._enhanceEventWithInitialFrame(
-              eventFromUnknownInput(error, undefined, {
-                attachStacktrace:
-                  client && client.getOptions().attachStacktrace,
-                rejection: false,
-              }),
-              data.url,
-              data.line,
-              data.column,
-            );
+        const event = GlobalHandlers._enhanceEventWithInitialFrame(
+          eventFromUnknownInput(error, undefined, {
+            attachStacktrace:
+              client && client.getOptions().attachStacktrace,
+            rejection: false,
+          }),
+          data.url,
+          data.line,
+          data.column,
+        );
 
         addExceptionMechanism(event, {
           handled: false,
-          type: 'onerror',
+          type: 'onError',
         });
 
         currentHub.captureEvent(event, {
           originalException: error,
         });
       },
-      // @ts-ignore
       type: 'error',
     });
 
@@ -141,14 +131,6 @@ export class GlobalHandlers implements Integration {
           // see https://developer.mozilla.org/en-US/docs/Web/API/PromiseRejectionEvent
           if ('reason' in e) {
             error = e.reason;
-          }
-          // something, somewhere, (likely a browser extension) effectively casts PromiseRejectionEvents
-          // to CustomEvents, moving the `promise` and `reason` attributes of the PRE into
-          // the CustomEvent's `detail` attribute, since they're not part of CustomEvent's spec
-          // see https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent and
-          // https://github.com/getsentry/sentry-javascript/issues/2380
-          else if ('detail' in e && 'reason' in e.detail) {
-            error = e.detail.reason;
           }
         } catch (_oO) {
           // no-empty
@@ -175,7 +157,7 @@ export class GlobalHandlers implements Integration {
 
         addExceptionMechanism(event, {
           handled: false,
-          type: 'onunhandledrejection',
+          type: 'onUnhandledRejection',
         });
 
         currentHub.captureEvent(event, {
@@ -184,53 +166,10 @@ export class GlobalHandlers implements Integration {
 
         return;
       },
-      // @ts-ignore
-      type: 'unhandledrejection',
+      type: 'unhandledRejection',
     });
 
     this._onUnhandledRejectionHandlerInstalled = true;
-  }
-
-  /**
-   * This function creates a stack from an old, error-less onerror handler.
-   */
-  private static _eventFromIncompleteOnError(
-    msg: any,
-    url: any,
-    line: any,
-    column: any,
-  ): Event {
-    const ERROR_TYPES_RE = /^(?:[Uu]ncaught (?:exception: )?)?(?:((?:Eval|Internal|Range|Reference|Syntax|Type|URI|)Error): )?(.*)$/i;
-
-    // If 'message' is ErrorEvent, get real message from inside
-    let message = isErrorEvent(msg) ? msg.message : msg;
-    let name;
-
-    if (isString(message)) {
-      const groups = message.match(ERROR_TYPES_RE);
-      if (groups) {
-        name = groups[1];
-        message = groups[2];
-      }
-    }
-
-    const event = {
-      exception: {
-        values: [
-          {
-            type: name || 'Error',
-            value: message,
-          },
-        ],
-      },
-    };
-
-    return GlobalHandlers._enhanceEventWithInitialFrame(
-      event,
-      url,
-      line,
-      column,
-    );
   }
 
   /**
@@ -256,18 +195,15 @@ export class GlobalHandlers implements Integration {
     line: any,
     column: any,
   ): Event {
-    event.exception = event.exception || {};
-    event.exception.values = event.exception.values || [];
-    event.exception.values[0] = event.exception.values[0] || {};
-    event.exception.values[0].stacktrace =
-      event.exception.values[0].stacktrace || {};
-    event.exception.values[0].stacktrace.frames =
-      event.exception.values[0].stacktrace.frames || [];
+    event.exception ||=  {};
+    event.exception.values ||= [];
+    event.exception.values[0] ||=  {};
+    event.exception.values[0].stacktrace ||=  {};
+    event.exception.values[0].stacktrace.frames ||= [];
 
     const colno = isNaN(parseInt(column, 10)) ? undefined : column;
     const lineno = isNaN(parseInt(line, 10)) ? undefined : line;
-    const filename = isString(url) && url.length > 0 ? url : getLocationHref();
-
+    const filename = isString(url) && url.length > 0 ? url : getCurrentPageRoute();
     if (event.exception.values[0].stacktrace.frames.length === 0) {
       event.exception.values[0].stacktrace.frames.push({
         colno,

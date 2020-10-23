@@ -1,5 +1,5 @@
 import { logger } from './logger';
-import { fill } from './object';
+import { dropUndefinedKeys, fill } from './object';
 import { getFunctionName } from './stacktrace';
 
 /** Object describing handler that will be triggered for a given `type` of instrumentation */
@@ -8,13 +8,15 @@ interface InstrumentHandler {
   callback: InstrumentHandlerCallback;
 }
 
-type InstrumentHandlerType = 'console' | 'request';
+type InstrumentHandlerType = 'console' | 'request' | 'error' | 'unhandledRejection';
 type InstrumentHandlerCallback = (data: any) => void;
 
 /**
  * Instrument native APIs to call handlers that can be used to create breadcrumbs, APM spans etc.
  *  - Console API
  *  - Request API
+ *  - Error API
+ *  - UnhandledRejection API
  */
 const handlers: {
   [key in InstrumentHandlerType]?: InstrumentHandlerCallback[];
@@ -35,6 +37,12 @@ function instrument(type: InstrumentHandlerType): void {
       break;
     case 'request':
       instrumentRequest();
+      break;
+    case 'error':
+      instrumentError();
+      break;
+    case 'unhandledRejection':
+      instrumentUnhandledRejection();
       break;
     default:
       logger.warn('unknown instrumentation type:', type);
@@ -118,11 +126,11 @@ function instrumentRequest(): void {
       } = options;
       const handlerData = {
         options: restOptions,
-        fetchData: {
+        fetchData: dropUndefinedKeys({
           method: (method || 'GET').toUpperCase(),
           url,
           data,
-        },
+        }),
         startTimestamp: Date.now(),
       };
       triggerHandlers('request', {
@@ -148,5 +156,26 @@ function instrumentRequest(): void {
         },
       });
     };
+  });
+}
+
+/** JSDoc */
+function instrumentError(): void {
+  wx.onError((stack) => {
+    const error = new Error();
+    const lines = stack.split(`\n`);
+    error.name = lines[0];
+    error.message = lines[1];
+    error.stack = stack;
+    triggerHandlers('error', { error });
+  });
+}
+
+/** JSDoc */
+function instrumentUnhandledRejection(): void {
+  wx.onUnhandledRejection(({ reason, promise }) => {
+    // @ts-ignore
+    promise.reason = reason;
+    triggerHandlers('unhandledRejection', promise);
   });
 }

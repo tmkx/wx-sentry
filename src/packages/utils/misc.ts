@@ -1,6 +1,5 @@
-import { Event, StackFrame, WrappedFunction } from '../types';
-
-import { snipLine } from './string';
+import { Event, WrappedFunction } from '../types';
+import IAnyObject = WechatMiniprogram.IAnyObject;
 
 /**
  * UUID4 generator
@@ -14,44 +13,6 @@ export function uuid4(): string {
     const v = c === 'x' ? r : (r & 0x3) | 0x8;
     return v.toString(16);
   });
-}
-
-/**
- * Parses string form of URL into an object
- * // borrowed from https://tools.ietf.org/html/rfc3986#appendix-B
- * // intentionally using regex and not <a/> href parsing trick because React Native and other
- * // environments where DOM might not be available
- * @returns parsed URL object
- */
-export function parseUrl(
-  url: string,
-): {
-  host?: string;
-  path?: string;
-  protocol?: string;
-  relative?: string;
-} {
-  if (!url) {
-    return {};
-  }
-
-  const match = url.match(
-    /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/,
-  );
-
-  if (!match) {
-    return {};
-  }
-
-  // coerce to undefined values to empty string so we don't get 'undefined'
-  const query = match[6] || '';
-  const fragment = match[8] || '';
-  return {
-    host: match[4],
-    path: match[5],
-    protocol: match[2],
-    relative: match[5] + query + fragment, // everything minus origin
-  };
 }
 
 /**
@@ -156,47 +117,20 @@ export function addExceptionMechanism(
   }
 }
 
+export function getCurrentPage(): WechatMiniprogram.Page.Instance<IAnyObject, IAnyObject> {
+  const pages = getCurrentPages();
+  return pages[pages.length - 1];
+}
+
 /**
  * A safe form of location.href
  */
-export function getLocationHref(): string {
+export function getCurrentPageRoute(): string {
   try {
-    return document.location.href;
+    return getCurrentPage().route;
   } catch (oO) {
     return '';
   }
-}
-
-// https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-const SEMVER_REGEXP = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
-
-/**
- * Represents Semantic Versioning object
- */
-interface SemVer {
-  major?: number;
-  minor?: number;
-  patch?: number;
-  prerelease?: string;
-  buildmetadata?: string;
-}
-
-/**
- * Parses input into a SemVer interface
- * @param input string representation of a semver version
- */
-export function parseSemver(input: string): SemVer {
-  const match = input.match(SEMVER_REGEXP) || [];
-  const major = parseInt(match[1], 10);
-  const minor = parseInt(match[2], 10);
-  const patch = parseInt(match[3], 10);
-  return {
-    buildmetadata: match[5],
-    major: isNaN(major) ? undefined : major,
-    minor: isNaN(minor) ? undefined : minor,
-    patch: isNaN(patch) ? undefined : patch,
-    prerelease: match[4],
-  };
 }
 
 const defaultRetryAfter = 60 * 1000; // 60 seconds
@@ -225,44 +159,4 @@ export function parseRetryAfterHeader(
   }
 
   return defaultRetryAfter;
-}
-
-/**
- * This function adds context (pre/post/line) lines to the provided frame
- *
- * @param lines string[] containing all lines
- * @param frame StackFrame that will be mutated
- * @param linesOfContext number of context lines we want to add pre/post
- */
-export function addContextToFrame(
-  lines: string[],
-  frame: StackFrame,
-  linesOfContext: number = 5,
-): void {
-  const lineno = frame.lineno || 0;
-  const maxLines = lines.length;
-  const sourceLine = Math.max(Math.min(maxLines, lineno - 1), 0);
-
-  frame.pre_context = lines
-    .slice(Math.max(0, sourceLine - linesOfContext), sourceLine)
-    .map((line: string) => snipLine(line, 0));
-
-  frame.context_line = snipLine(
-    lines[Math.min(maxLines - 1, sourceLine)],
-    frame.colno || 0,
-  );
-
-  frame.post_context = lines
-    .slice(Math.min(sourceLine + 1, maxLines), sourceLine + 1 + linesOfContext)
-    .map((line: string) => snipLine(line, 0));
-}
-
-/**
- * Strip the query string and fragment off of a given URL or path (if present)
- *
- * @param urlPath Full URL or path, including possible query string and/or fragment
- * @returns URL or path without query string or fragment
- */
-export function stripUrlQueryAndFragment(urlPath: string): string {
-  return urlPath.split(/[\?#]/, 1)[0];
 }
