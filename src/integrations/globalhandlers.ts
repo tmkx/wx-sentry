@@ -228,7 +228,12 @@ export class GlobalHandlers implements Integration {
       },
     };
 
-    return GlobalHandlers._enhanceEventWithInitialFrame(event, url, line, column);
+    return GlobalHandlers._enhanceEventWithInitialFrame(
+      event,
+      url,
+      line,
+      column,
+    );
   }
 
   /**

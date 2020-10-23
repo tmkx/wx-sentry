@@ -16,7 +16,6 @@ import {
 
 /** Base Transport class implementation */
 export abstract class BaseTransport implements Transport {
-
   /** Helper to get Sentry API endpoints. */
   protected readonly _api: API;
 

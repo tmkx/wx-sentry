@@ -42,6 +42,7 @@ export { MiniAppClient } from './client';
 export { eventFromException, eventFromMessage } from './eventbuilder';
 export {
   defaultIntegrations,
+  defaultReportSystemInfos,
   init,
   lastEventId,
   flush,

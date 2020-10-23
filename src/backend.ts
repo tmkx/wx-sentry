@@ -40,6 +40,11 @@ export interface MiniAppOptions extends Options {
    * By default Sessions Tracking is disabled.
    */
   autoSessionTracking?: boolean;
+
+  /**
+   * 默认上报的wx.getSystemInfo字段
+   */
+  defaultReportSystemInfos?: false | string[];
 }
 
 /**

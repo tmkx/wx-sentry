@@ -1,4 +1,5 @@
 import {
+  configureScope,
   getCurrentHub,
   initAndBind,
   Integrations as CoreIntegrations,
@@ -24,6 +25,16 @@ export const defaultIntegrations = [
   new LinkedErrors(),
 ];
 
+export const defaultReportSystemInfos = [
+  'SDKVersion',
+  'brand',
+  'language',
+  'model',
+  'platform',
+  'system',
+  'version',
+];
+
 /**
  * The Sentry MiniApp SDK Client.
  *
@@ -37,6 +48,9 @@ export function init(options: MiniAppOptions = {}): void {
   if (options.defaultIntegrations === undefined) {
     options.defaultIntegrations = defaultIntegrations;
   }
+  if (options.defaultReportSystemInfos === undefined) {
+    options.defaultReportSystemInfos = defaultReportSystemInfos;
+  }
   if (options.release === undefined) {
     /**
      * 线上小程序版本号仅支持在正式版小程序中获取，开发版和体验版中无法获取。
@@ -49,6 +63,23 @@ export function init(options: MiniAppOptions = {}): void {
   }
 
   initAndBind(MiniAppClient, options);
+
+  // #region 小程序默认上报信息
+  configureScope((scope) => {
+    if (options.defaultReportSystemInfos) {
+      const systemInfos = (wx.getSystemInfoSync() as any) as Record<
+        string,
+        string
+      >;
+      options.defaultReportSystemInfos.forEach((key) => {
+        if (key in systemInfos) {
+          scope.setTag(`App ${key.replace(/^[a-z]/, c => c.toUpperCase())}`, systemInfos[key])
+        }
+      });
+    }
+    scope.setExtra('Enter Options', wx.getEnterOptionsSync?.());
+  });
+  // #endregion
 
   if (options.autoSessionTracking) {
     startSessionTracking();
