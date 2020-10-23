@@ -63,6 +63,31 @@ export function fill(
   }
 }
 
+export function fillTopLevel(
+  original: (...args: any[]) => any,
+  replacement: (...args: any[]) => any,
+): WrappedFunction {
+  const wrapped = replacement(original) as WrappedFunction;
+
+  wrapped.prototype = wrapped.prototype || {};
+  Object.defineProperties(wrapped, {
+    __sentry__: {
+      enumerable: false,
+      value: true,
+    },
+    __sentry_original__: {
+      enumerable: false,
+      value: original,
+    },
+    __sentry_wrapped__: {
+      enumerable: false,
+      value: wrapped,
+    },
+  });
+
+  return wrapped;
+}
+
 /**
  * Encodes given object into url-friendly format
  *

@@ -1,5 +1,5 @@
 import { Integration } from '../packages/types';
-import { fill, getFunctionName, getGlobalObject } from '../packages/utils';
+import { fillTopLevel, getFunctionName } from '../packages/utils';
 
 import { wrap } from '../helpers';
 
@@ -40,14 +40,14 @@ export class TryCatch implements Integration {
    * and provide better metadata.
    */
   public setupOnce(): void {
-    const global = getGlobalObject();
-
     if (this._options.setTimeout) {
-      fill(global, 'setTimeout', this._wrapTimeFunction.bind(this));
+      // @ts-ignore
+      setTimeout = fillTopLevel(setTimeout, this._wrapTimeFunction.bind(this));
     }
 
     if (this._options.setInterval) {
-      fill(global, 'setInterval', this._wrapTimeFunction.bind(this));
+      // @ts-ignore
+      setInterval = fillTopLevel(setTimeout, this._wrapTimeFunction.bind(this));
     }
   }
 
@@ -55,7 +55,6 @@ export class TryCatch implements Integration {
   private _wrapTimeFunction(
     original: (...args: any[]) => number,
   ): () => number {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return function (this: any, ...args: any[]): number {
       const originalCallback = args[0];
       args[0] = wrap(originalCallback, {

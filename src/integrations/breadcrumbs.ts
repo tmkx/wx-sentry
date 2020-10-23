@@ -1,6 +1,10 @@
 import { getCurrentHub } from '../packages/hub';
 import { Event, Integration, Severity } from '../packages/types';
-import { addInstrumentationHandler, getEventDescription, safeJoin } from '../packages/utils';
+import {
+  addInstrumentationHandler,
+  getEventDescription,
+  safeJoin,
+} from '../packages/utils';
 
 /** JSDoc */
 interface BreadcrumbsOptions {

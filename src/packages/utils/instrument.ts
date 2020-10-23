@@ -108,7 +108,15 @@ function instrumentRequest(): void {
     return function (
       options: WechatMiniprogram.RequestOption,
     ): PromiseLike<any> {
-      const { success, fail, complete, method, url, data, ...restOptions } = options;
+      const {
+        success,
+        fail,
+        complete,
+        method,
+        url,
+        data,
+        ...restOptions
+      } = options;
       const handlerData = {
         options: restOptions,
         fetchData: {
