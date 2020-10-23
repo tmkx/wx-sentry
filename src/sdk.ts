@@ -3,7 +3,7 @@ import {
   initAndBind,
   Integrations as CoreIntegrations,
 } from './packages/core';
-import { getGlobalObject, SyncPromise } from './packages/utils';
+import { SyncPromise } from './packages/utils';
 
 import { MiniAppOptions } from './backend';
 import { MiniAppClient } from './client';
@@ -38,11 +38,11 @@ export function init(options: MiniAppOptions = {}): void {
     options.defaultIntegrations = defaultIntegrations;
   }
   if (options.release === undefined) {
-    const window = getGlobalObject<Window>();
-    // This supports the variable that sentry-webpack-plugin injects
-    if (window.SENTRY_RELEASE && window.SENTRY_RELEASE.id) {
-      options.release = window.SENTRY_RELEASE.id;
-    }
+    /**
+     * 线上小程序版本号仅支持在正式版小程序中获取，开发版和体验版中无法获取。
+     * @see https://developers.weixin.qq.com/miniprogram/dev/api/open-api/account-info/wx.getAccountInfoSync.html
+     */
+    options.release = wx.getAccountInfoSync().miniProgram.version;
   }
   if (options.autoSessionTracking === undefined) {
     options.autoSessionTracking = false;
@@ -123,7 +123,7 @@ function startSessionTracking(): void {
     fcpResolved = true;
     possiblyEndSession();
   } catch (e) {
-    // fcpResolved = true;
-    // possiblyEndSession();
+    fcpResolved = true;
+    possiblyEndSession();
   }
 }

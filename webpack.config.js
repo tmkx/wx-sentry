@@ -1,5 +1,7 @@
 const path = require('path');
-const npmDtsPlugin = require('npm-dts-webpack-plugin');
+const { ProgressPlugin } = require('webpack');
+const NpmDtsPlugin = require('npm-dts-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   entry: './src/index.ts',
@@ -25,7 +27,9 @@ module.exports = {
     ],
   },
   plugins: [
-    new npmDtsPlugin({
+    new ProgressPlugin({}),
+    new CleanWebpackPlugin({}),
+    new NpmDtsPlugin({
       logLevel: 'warn',
       output: 'dist/wx-sentry.d.ts',
     }),

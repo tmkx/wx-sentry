@@ -1,10 +1,6 @@
 import { getCurrentHub } from '../packages/hub';
 import { Event, Integration, Severity } from '../packages/types';
-import {
-  addInstrumentationHandler,
-  getEventDescription,
-  safeJoin,
-} from '../packages/utils';
+import { addInstrumentationHandler, getEventDescription, safeJoin } from '../packages/utils';
 
 /** JSDoc */
 interface BreadcrumbsOptions {
@@ -66,10 +62,9 @@ export class Breadcrumbs implements Integration {
   }
 
   /**
-   * Instrument browser built-ins w/ breadcrumb capturing
+   * Instrument MiniApp built-ins breadcrumb capturing
    *  - Console API
-   *  - Fetch API
-   *  - History API
+   *  - wx.request API
    */
   public setupOnce(): void {
     if (this._options.console) {
@@ -126,7 +121,7 @@ export class Breadcrumbs implements Integration {
    * Creates breadcrumbs from wx.request API calls
    */
   private static _requestBreadcrumb(handlerData: { [key: string]: any }): void {
-    // We only capture complete wx.request requests
+    // We only capture complete requests
     if (!handlerData.endTimestamp) {
       return;
     }
@@ -142,14 +137,14 @@ export class Breadcrumbs implements Integration {
     if (handlerData.error) {
       getCurrentHub().addBreadcrumb(
         {
-          category: 'fetch',
+          category: 'request',
           data: handlerData.fetchData,
           level: Severity.Error,
           type: 'http',
         },
         {
+          input: handlerData.options,
           data: handlerData.error,
-          input: handlerData.args,
         },
       );
     } else {
@@ -158,12 +153,12 @@ export class Breadcrumbs implements Integration {
           category: 'request',
           data: {
             ...handlerData.fetchData,
-            status_code: handlerData.response.status,
+            status_code: handlerData.response.statusCode,
           },
           type: 'http',
         },
         {
-          input: handlerData.args,
+          input: handlerData.options,
           response: handlerData.response,
         },
       );

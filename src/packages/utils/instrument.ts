@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/ban-types */
 import { logger } from './logger';
-import { getGlobalObject } from './misc';
 import { fill } from './object';
 import { getFunctionName } from './stacktrace';
-
-const global = getGlobalObject<Window>();
 
 /** Object describing handler that will be triggered for a given `type` of instrumentation */
 interface InstrumentHandler {
@@ -113,12 +108,13 @@ function instrumentRequest(): void {
     return function (
       options: WechatMiniprogram.RequestOption,
     ): PromiseLike<any> {
-      const { method, url, success, fail } = options;
+      const { success, fail, complete, method, url, data, ...restOptions } = options;
       const handlerData = {
-        options,
+        options: restOptions,
         fetchData: {
-          method: (method || 'unknown').toUpperCase(),
+          method: (method || 'GET').toUpperCase(),
           url,
+          data,
         },
         startTimestamp: Date.now(),
       };
