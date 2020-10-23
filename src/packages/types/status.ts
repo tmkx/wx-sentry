@@ -1,5 +1,4 @@
 /** The status of an event. */
-// eslint-disable-next-line import/export
 export enum Status {
   /** The status could not be determined. */
   Unknown = 'unknown',
@@ -15,7 +14,6 @@ export enum Status {
   Failed = 'failed',
 }
 
-// eslint-disable-next-line @typescript-eslint/no-namespace, import/export
 export namespace Status {
   /**
    * Converts a HTTP status code into a {@link Status}.

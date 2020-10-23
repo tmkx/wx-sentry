@@ -134,7 +134,7 @@ export interface Scope {
 
   /**
    * Sets the breadcrumbs in the scope
-   * @param breadcrumbs Breadcrumb
+   * @param breadcrumb Breadcrumb
    * @param maxBreadcrumbs number of max breadcrumbs to merged into event.
    */
   addBreadcrumb(breadcrumb: Breadcrumb, maxBreadcrumbs?: number): this;

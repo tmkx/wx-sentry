@@ -12,11 +12,6 @@ export class API {
     this._dsnObject = new Dsn(dsn);
   }
 
-  /** Returns the Dsn object. */
-  public getDsn(): Dsn {
-    return this._dsnObject;
-  }
-
   /** Returns the prefix to construct Sentry ingestion API endpoints. */
   public getBaseApiEndpoint(): string {
     const dsn = this._dsnObject;
@@ -48,76 +43,6 @@ export class API {
    */
   public getEnvelopeEndpointWithUrlEncodedAuth(): string {
     return `${this._getEnvelopeEndpoint()}?${this._encodedAuth()}`;
-  }
-
-  /** Returns only the path component for the store endpoint. */
-  public getStoreEndpointPath(): string {
-    const dsn = this._dsnObject;
-    return `${dsn.path ? `/${dsn.path}` : ''}/api/${dsn.projectId}/store/`;
-  }
-
-  /**
-   * Returns an object that can be used in request headers.
-   * This is needed for node and the old /store endpoint in sentry
-   */
-  public getRequestHeaders(
-    clientName: string,
-    clientVersion: string,
-  ): { [key: string]: string } {
-    const dsn = this._dsnObject;
-    const header = [`Sentry sentry_version=${SENTRY_API_VERSION}`];
-    header.push(`sentry_client=${clientName}/${clientVersion}`);
-    header.push(`sentry_key=${dsn.user}`);
-    if (dsn.pass) {
-      header.push(`sentry_secret=${dsn.pass}`);
-    }
-    return {
-      'Content-Type': 'application/json',
-      'X-Sentry-Auth': header.join(', '),
-    };
-  }
-
-  /** Returns the url to the report dialog endpoint. */
-  public getReportDialogEndpoint(
-    dialogOptions: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      [key: string]: any;
-      user?: { name?: string; email?: string };
-    } = {},
-  ): string {
-    const dsn = this._dsnObject;
-    const endpoint = `${this.getBaseApiEndpoint()}embed/error-page/`;
-
-    const encodedOptions = [];
-    encodedOptions.push(`dsn=${dsn.toString()}`);
-    for (const key in dialogOptions) {
-      if (key === 'user') {
-        if (!dialogOptions.user) {
-          continue;
-        }
-        if (dialogOptions.user.name) {
-          encodedOptions.push(
-            `name=${encodeURIComponent(dialogOptions.user.name)}`,
-          );
-        }
-        if (dialogOptions.user.email) {
-          encodedOptions.push(
-            `email=${encodeURIComponent(dialogOptions.user.email)}`,
-          );
-        }
-      } else {
-        encodedOptions.push(
-          `${encodeURIComponent(key)}=${encodeURIComponent(
-            dialogOptions[key] as string,
-          )}`,
-        );
-      }
-    }
-    if (encodedOptions.length) {
-      return `${endpoint}?${encodedOptions.join('&')}`;
-    }
-
-    return endpoint;
   }
 
   /** Returns the envelope endpoint URL. */

@@ -48,14 +48,14 @@ export class RequestTransport extends BaseTransport {
           url: sentryRequest.url,
           method: 'POST',
           data: sentryRequest.body,
-          success: (res) => {
+          success: (result) => {
             const headers = {
-              'x-sentry-rate-limits': res.header['X-Sentry-Rate-Limits'],
-              'retry-after': res.header['Retry-After'],
+              'x-sentry-rate-limits': result.header['X-Sentry-Rate-Limits'],
+              'retry-after': result.header['Retry-After'],
             };
             this._handleResponse({
               requestType: sentryRequest.type,
-              response: res.data as any,
+              result,
               headers,
               resolve,
               reject,

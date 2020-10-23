@@ -372,7 +372,7 @@ export class Scope implements ScopeInterface {
    * Note that breadcrumbs will be added by the client.
    * Also if the event has already breadcrumbs on it, we do not merge them.
    * @param event Event
-   * @param hint May contain additional informartion about the original exception.
+   * @param hint May contain additional information about the original exception.
    * @hidden
    */
   public applyToEvent(

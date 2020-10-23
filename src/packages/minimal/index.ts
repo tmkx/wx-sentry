@@ -17,11 +17,9 @@ import {
  * @param method function to call on hub.
  * @param args to pass to function.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function callOnHub<T>(method: string, ...args: any[]): T {
   const hub = getCurrentHub();
   if (hub && hub[method as keyof Hub]) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return (hub[method as keyof Hub] as any)(...args);
   }
   throw new Error(

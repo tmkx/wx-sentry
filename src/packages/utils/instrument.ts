@@ -85,7 +85,9 @@ function instrumentConsole(): void {
       return;
     }
 
-    fill(console, level, function (originalConsoleLevel: (...args: any[]) => any): Function {
+    fill(console, level, function (
+      originalConsoleLevel: (...args: any[]) => any,
+    ): Function {
       return function (...args: any[]): void {
         triggerHandlers('console', { args, level });
 

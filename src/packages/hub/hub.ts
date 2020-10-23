@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import {
   Breadcrumb,
   BreadcrumbHint,
@@ -459,7 +458,7 @@ export class Hub implements HubInterface {
 /** Returns the global shim registry. */
 export function getMainCarrier(): Carrier {
   const carrier = wx;
-  carrier.__SENTRY__ = carrier.__SENTRY__ || {
+  carrier.__SENTRY__ ||= {
     extensions: {},
     hub: undefined,
   };
@@ -518,9 +517,8 @@ function hasHubOnCarrier(carrier: Carrier): boolean {
 export function getHubFromCarrier(carrier: Carrier): Hub {
   if (carrier && carrier.__SENTRY__ && carrier.__SENTRY__.hub)
     return carrier.__SENTRY__.hub;
-  carrier.__SENTRY__ = carrier.__SENTRY__ || {};
-  carrier.__SENTRY__.hub = new Hub();
-  return carrier.__SENTRY__.hub;
+  carrier.__SENTRY__ ||= {};
+  return (carrier.__SENTRY__.hub = new Hub());
 }
 
 /**
@@ -530,7 +528,7 @@ export function getHubFromCarrier(carrier: Carrier): Hub {
  */
 export function setHubOnCarrier(carrier: Carrier, hub: Hub): boolean {
   if (!carrier) return false;
-  carrier.__SENTRY__ = carrier.__SENTRY__ || {};
+  carrier.__SENTRY__ ||= {};
   carrier.__SENTRY__.hub = hub;
   return true;
 }

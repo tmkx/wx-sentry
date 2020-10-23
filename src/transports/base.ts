@@ -16,10 +16,6 @@ import {
 
 /** Base Transport class implementation */
 export abstract class BaseTransport implements Transport {
-  /**
-   * @deprecated
-   */
-  public url: string;
 
   /** Helper to get Sentry API endpoints. */
   protected readonly _api: API;
@@ -32,8 +28,6 @@ export abstract class BaseTransport implements Transport {
 
   public constructor(public options: TransportOptions) {
     this._api = new API(this.options.dsn);
-    // eslint-disable-next-line deprecation/deprecation
-    this.url = this._api.getStoreEndpointWithUrlEncodedAuth();
   }
 
   /**
@@ -57,20 +51,20 @@ export abstract class BaseTransport implements Transport {
    */
   protected _handleResponse({
     requestType,
-    response,
+    result,
     headers,
     resolve,
     reject,
   }: {
     requestType: SentryRequestType;
-    response: Response;
+    result: WechatMiniprogram.RequestSuccessCallbackResult;
     headers: Record<string, string | null>;
     resolve: (
       value?: Response | PromiseLike<Response> | null | undefined,
     ) => void;
     reject: (reason?: unknown) => void;
   }): void {
-    const status = Status.fromHttpCode(response.status as any);
+    const status = Status.fromHttpCode(result.statusCode);
     /**
      * "The name is case-insensitive."
      * https://developer.mozilla.org/en-US/docs/Web/API/Headers/get
@@ -88,7 +82,7 @@ export abstract class BaseTransport implements Transport {
       return;
     }
 
-    reject(response);
+    reject(result.errMsg);
   }
 
   /**

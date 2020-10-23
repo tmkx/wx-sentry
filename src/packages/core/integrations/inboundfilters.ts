@@ -65,7 +65,7 @@ export class InboundFilters implements Integration {
     event: Event,
     options: Partial<InboundFiltersOptions>,
   ): boolean {
-    if (this._isSentryError(event, options)) {
+    if (InboundFilters._isSentryError(event, options)) {
       logger.warn(
         `Event dropped due to being internal Sentry Error.\nEvent: ${getEventDescription(
           event,
@@ -85,7 +85,7 @@ export class InboundFilters implements Integration {
       logger.warn(
         `Event dropped due to being matched by \`denyUrls\` option.\nEvent: ${getEventDescription(
           event,
-        )}.\nUrl: ${this._getEventFilterUrl(event)}`,
+        )}.\nUrl: ${InboundFilters._getEventFilterUrl(event)}`,
       );
       return true;
     }
@@ -93,7 +93,7 @@ export class InboundFilters implements Integration {
       logger.warn(
         `Event dropped due to not being matched by \`allowUrls\` option.\nEvent: ${getEventDescription(
           event,
-        )}.\nUrl: ${this._getEventFilterUrl(event)}`,
+        )}.\nUrl: ${InboundFilters._getEventFilterUrl(event)}`,
       );
       return true;
     }
@@ -101,7 +101,7 @@ export class InboundFilters implements Integration {
   }
 
   /** JSDoc */
-  private _isSentryError(
+  private static _isSentryError(
     event: Event,
     options: Partial<InboundFiltersOptions>,
   ): boolean {
@@ -132,8 +132,7 @@ export class InboundFilters implements Integration {
       return false;
     }
 
-    return this._getPossibleEventMessages(event).some((message) =>
-      // Not sure why TypeScript complains here...
+    return InboundFilters._getPossibleEventMessages(event).some((message) =>
       (options.ignoreErrors as Array<RegExp | string>).some((pattern) =>
         isMatchingPattern(message, pattern),
       ),
@@ -149,7 +148,7 @@ export class InboundFilters implements Integration {
     if (!options.denyUrls || !options.denyUrls.length) {
       return false;
     }
-    const url = this._getEventFilterUrl(event);
+    const url = InboundFilters._getEventFilterUrl(event);
     return !url
       ? false
       : options.denyUrls.some((pattern) => isMatchingPattern(url, pattern));
@@ -164,7 +163,7 @@ export class InboundFilters implements Integration {
     if (!options.allowUrls || !options.allowUrls.length) {
       return true;
     }
-    const url = this._getEventFilterUrl(event);
+    const url = InboundFilters._getEventFilterUrl(event);
     return !url
       ? true
       : options.allowUrls.some((pattern) => isMatchingPattern(url, pattern));
@@ -204,7 +203,7 @@ export class InboundFilters implements Integration {
   }
 
   /** JSDoc */
-  private _getPossibleEventMessages(event: Event): string[] {
+  private static _getPossibleEventMessages(event: Event): string[] {
     if (event.message) {
       return [event.message];
     }
@@ -224,7 +223,7 @@ export class InboundFilters implements Integration {
   }
 
   /** JSDoc */
-  private _getEventFilterUrl(event: Event): string | null {
+  private static _getEventFilterUrl(event: Event): string | null {
     try {
       if (event.stacktrace) {
         const frames = event.stacktrace.frames;

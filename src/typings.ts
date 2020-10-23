@@ -26,6 +26,9 @@ declare namespace WechatMiniprogram {
       globalEventProcessors?: any;
       hub?: any;
       logger?: any;
+      extensions?: {
+        [key: string]: Function;
+      };
     };
   }
 }

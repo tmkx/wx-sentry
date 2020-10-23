@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /**
  * Checks whether given value's type is one of a few Error or Error-like
  * {@link isError}.
@@ -71,17 +69,6 @@ export function isPlainObject(wat: any): boolean {
  */
 export function isEvent(wat: any): boolean {
   return typeof Event !== 'undefined' && isInstanceOf(wat, Event);
-}
-
-/**
- * Checks whether given value's type is an Element instance
- * {@link isElement}.
- *
- * @param wat A value to be checked.
- * @returns A boolean representing the result.
- */
-export function isElement(wat: any): boolean {
-  return typeof Element !== 'undefined' && isInstanceOf(wat, Element);
 }
 
 /**

@@ -18,10 +18,8 @@ export class FunctionToString implements Integration {
    * @inheritDoc
    */
   public setupOnce(): void {
-    // eslint-disable-next-line @typescript-eslint/unbound-method
     originalFunctionToString = Function.prototype.toString;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Function.prototype.toString = function (
       this: WrappedFunction,
       ...args: any[]
