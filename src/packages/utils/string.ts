@@ -26,7 +26,6 @@ export function snipLine(line: string, colno: number): string {
     return newLine;
   }
   if (colno > ll) {
-    // eslint-disable-next-line no-param-reassign
     colno = ll;
   }
 
@@ -60,14 +59,12 @@ export function snipLine(line: string, colno: number): string {
  * @param delimiter string to be placed in-between values
  * @returns Joined values
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function safeJoin(input: any[], delimiter?: string): string {
   if (!Array.isArray(input)) {
     return '';
   }
 
   const output = [];
-  // eslint-disable-next-line @typescript-eslint/prefer-for-of
   for (let i = 0; i < input.length; i++) {
     const value = input[i];
     try {

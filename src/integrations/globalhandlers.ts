@@ -94,13 +94,13 @@ export class GlobalHandlers implements Integration {
 
         const client = currentHub.getClient();
         const event = isPrimitive(error)
-          ? this._eventFromIncompleteOnError(
+          ? GlobalHandlers._eventFromIncompleteOnError(
               data.msg,
               data.url,
               data.line,
               data.column,
             )
-          : this._enhanceEventWithInitialFrame(
+          : GlobalHandlers._enhanceEventWithInitialFrame(
               eventFromUnknownInput(error, undefined, {
                 attachStacktrace:
                   client && client.getOptions().attachStacktrace,
@@ -168,7 +168,7 @@ export class GlobalHandlers implements Integration {
 
         const client = currentHub.getClient();
         const event = isPrimitive(error)
-          ? this._eventFromIncompleteRejection(error)
+          ? GlobalHandlers._eventFromIncompleteRejection(error)
           : eventFromUnknownInput(error, undefined, {
               attachStacktrace: client && client.getOptions().attachStacktrace,
               rejection: true,
@@ -197,8 +197,7 @@ export class GlobalHandlers implements Integration {
   /**
    * This function creates a stack from an old, error-less onerror handler.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _eventFromIncompleteOnError(
+  private static _eventFromIncompleteOnError(
     msg: any,
     url: any,
     line: any,
@@ -229,14 +228,13 @@ export class GlobalHandlers implements Integration {
       },
     };
 
-    return this._enhanceEventWithInitialFrame(event, url, line, column);
+    return GlobalHandlers._enhanceEventWithInitialFrame(event, url, line, column);
   }
 
   /**
    * This function creates an Event from an TraceKitStackTrace that has part of it missing.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _eventFromIncompleteRejection(error: any): Event {
+  private static _eventFromIncompleteRejection(error: any): Event {
     return {
       exception: {
         values: [
@@ -250,8 +248,7 @@ export class GlobalHandlers implements Integration {
   }
 
   /** JSDoc */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  private _enhanceEventWithInitialFrame(
+  private static _enhanceEventWithInitialFrame(
     event: Event,
     url: any,
     line: any,

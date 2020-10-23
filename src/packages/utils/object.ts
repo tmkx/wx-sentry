@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ExtendedError, WrappedFunction } from '../types';
 
 import {
@@ -236,35 +235,6 @@ function serializeValue(value: any): any {
  * - filter global objects
  */
 function normalizeValue<T>(value: T, key?: any): T | string {
-  if (
-    key === 'domain' &&
-    value &&
-    typeof value === 'object' &&
-    ((value as unknown) as { _events: any })._events
-  ) {
-    return '[Domain]';
-  }
-
-  if (key === 'domainEmitter') {
-    return '[DomainEmitter]';
-  }
-
-  if (typeof (window as any) !== 'undefined' && (value as unknown) === window) {
-    return '[Window]';
-  }
-
-  if (
-    typeof (document as any) !== 'undefined' &&
-    (value as unknown) === document
-  ) {
-    return '[Document]';
-  }
-
-  // React's SyntheticEvent thingy
-  if (isSyntheticEvent(value)) {
-    return '[SyntheticEvent]';
-  }
-
   if (typeof value === 'number' && value !== value) {
     return '[NaN]';
   }
@@ -288,7 +258,6 @@ function normalizeValue<T>(value: T, key?: any): T | string {
  * @param depth Optional number indicating how deep should walking be performed
  * @param memo Optional Memo class handling decycling
  */
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function walk(
   key: string,
   value: any,
@@ -300,7 +269,6 @@ export function walk(
     return serializeValue(value);
   }
 
-  /* eslint-disable @typescript-eslint/no-unsafe-member-access */
   // If value implements `toJSON` method, call it and return early
   if (
     value !== null &&
@@ -362,7 +330,6 @@ export function walk(
  * - Takes care of Error objects serialization
  * - Optionally limit depth of final output
  */
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function normalize(input: any, depth?: number): any {
   try {
     return JSON.parse(
@@ -380,7 +347,6 @@ export function normalize(input: any, depth?: number): any {
  * and truncated list that will be used inside the event message.
  * eg. `Non-error exception captured with keys: foo, bar, baz`
  */
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function extractExceptionKeysForMessage(
   exception: any,
   maxLength: number = 40,
