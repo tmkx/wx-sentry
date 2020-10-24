@@ -80,7 +80,7 @@ export function init(options: MiniAppOptions = {}): void {
         }
       });
     }
-    scope.setExtra('Enter Options', wx.getEnterOptionsSync?.());
+    scope.setExtra('Launch Options', wx.getLaunchOptionsSync());
   });
   // #endregion
 
