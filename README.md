@@ -7,7 +7,7 @@
 
 # Sentry SDK for WeChat MiniApp
 
-Sentry SDK 微信小程序版，基于官方 SDK 5.27.0 版修改
+Sentry SDK 微信小程序版，基于官方 SDK 5.27.1 版修改
 
 ## 链接
 

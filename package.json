@@ -1,6 +1,6 @@
 {
   "name": "@4in/wx-sentry",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "Sentry SDK for WeChat MiniApp",
   "author": "Tmk <i@tmk.im>",
   "license": "BSD-3-Clause",
@@ -11,7 +11,7 @@
   "types": "dist/wx-sentry.d.ts",
   "publishConfig": {
     "access": "public",
-    "registry": "https://npm.pkg.github.com/"
+    "registry": "https://registry.npmjs.org/"
   },
   "files": [
     "dist",
