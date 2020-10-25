@@ -5,7 +5,6 @@ import {
   addInstrumentationHandler,
   getCurrentPageRoute,
   isPrimitive,
-  isString,
   logger,
 } from '../packages/utils';
 
@@ -73,18 +72,12 @@ export class GlobalHandlers implements Integration {
     addInstrumentationHandler({
       callback: (data: {
         error: any;
-        msg?: any;
-        url?: any;
-        line?: any;
-        column?: any;
       }) => {
         const error = data.error;
         const currentHub = getCurrentHub();
         const hasIntegration = currentHub.getIntegration(GlobalHandlers);
-        const isFailedOwnDelivery =
-          error && error.__sentry_own_request__ === true;
 
-        if (!hasIntegration || shouldIgnoreOnError() || isFailedOwnDelivery) {
+        if (!hasIntegration || shouldIgnoreOnError()) {
           return;
         }
 
@@ -93,10 +86,7 @@ export class GlobalHandlers implements Integration {
           eventFromUnknownInput(error, undefined, {
             attachStacktrace: client && client.getOptions().attachStacktrace,
             rejection: false,
-          }),
-          data.url,
-          data.line,
-          data.column,
+          })
         );
 
         addExceptionMechanism(event, {
@@ -137,10 +127,8 @@ export class GlobalHandlers implements Integration {
 
         const currentHub = getCurrentHub();
         const hasIntegration = currentHub.getIntegration(GlobalHandlers);
-        const isFailedOwnDelivery =
-          error && error.__sentry_own_request__ === true;
 
-        if (!hasIntegration || shouldIgnoreOnError() || isFailedOwnDelivery) {
+        if (!hasIntegration || shouldIgnoreOnError()) {
           return true;
         }
 
@@ -190,9 +178,6 @@ export class GlobalHandlers implements Integration {
   /** JSDoc */
   private static _enhanceEventWithInitialFrame(
     event: Event,
-    url: any,
-    line: any,
-    column: any,
   ): Event {
     event.exception ||= {};
     event.exception.values ||= [];
@@ -200,17 +185,13 @@ export class GlobalHandlers implements Integration {
     event.exception.values[0].stacktrace ||= {};
     event.exception.values[0].stacktrace.frames ||= [];
 
-    const colno = isNaN(parseInt(column, 10)) ? undefined : column;
-    const lineno = isNaN(parseInt(line, 10)) ? undefined : line;
-    const filename =
-      isString(url) && url.length > 0 ? url : getCurrentPageRoute();
     if (event.exception.values[0].stacktrace.frames.length === 0) {
       event.exception.values[0].stacktrace.frames.push({
-        colno,
-        filename,
+        lineno: undefined,
+        colno: undefined,
+        filename: getCurrentPageRoute(),
         function: '?',
         in_app: true,
-        lineno,
       });
     }
 

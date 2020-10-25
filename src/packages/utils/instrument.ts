@@ -62,7 +62,7 @@ export function addInstrumentationHandler(handler: InstrumentHandler): void {
   if (!handler || typeof handler.callback !== 'function') {
     return;
   }
-  handlers[handler.type] = handlers[handler.type] || [];
+  handlers[handler.type] ||= [];
   (handlers[handler.type] as InstrumentHandlerCallback[]).push(
     handler.callback,
   );
@@ -166,10 +166,9 @@ function instrumentRequest(): void {
 /** JSDoc */
 function instrumentError(): void {
   wx.onError((stack) => {
-    const error = new Error();
-    const lines = stack.split(`\n`);
-    error.name = lines[0];
-    error.message = lines[1];
+    const [name, message] = stack.split(`\n`);
+    const error = new Error(message);
+    error.name = name;
     error.stack = stack;
     triggerHandlers('error', { error });
   });

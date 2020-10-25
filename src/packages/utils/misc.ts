@@ -82,13 +82,11 @@ export function addExceptionTypeValue(
   value?: string,
   type?: string,
 ): void {
-  event.exception = event.exception || {};
-  event.exception.values = event.exception.values || [];
-  event.exception.values[0] = event.exception.values[0] || {};
-  event.exception.values[0].value =
-    event.exception.values[0].value || value || '';
-  event.exception.values[0].type =
-    event.exception.values[0].type || type || 'Error';
+  event.exception ||= {};
+  event.exception.values ||= [];
+  event.exception.values[0] ||= {};
+  event.exception.values[0].value ||= value || '';
+  event.exception.values[0].type ||= type || 'Error';
 }
 
 /**
@@ -106,8 +104,7 @@ export function addExceptionMechanism(
   // TODO: Use real type with `keyof Mechanism` thingy and maybe make it better?
   try {
     // @ts-ignore Type 'Mechanism | {}' is not assignable to type 'Mechanism | undefined'
-    event.exception!.values![0].mechanism =
-      event.exception!.values![0].mechanism || {};
+    event.exception!.values![0].mechanism ||= {};
     Object.keys(mechanism).forEach((key) => {
       // @ts-ignore Mechanism has no index signature
       event.exception!.values![0].mechanism[key] = mechanism[key];

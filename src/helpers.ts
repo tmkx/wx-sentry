@@ -33,7 +33,6 @@ export function ignoreNextOnError(): void {
  *
  * @param fn A function to wrap.
  * @param options
- * @param before
  * @returns The wrapped function.
  * @hidden
  */
@@ -42,7 +41,6 @@ export function wrap(
   options: {
     mechanism?: Mechanism;
   } = {},
-  before?: WrappedFunction,
 ): any {
   if (typeof fn !== 'function') {
     return fn;
@@ -69,19 +67,9 @@ export function wrap(
     const args = Array.prototype.slice.call(arguments);
 
     try {
-      if (before && typeof before === 'function') {
-        before.apply(this, arguments);
-      }
 
       const wrappedArguments = args.map((arg: any) => wrap(arg, options));
 
-      if (fn.handleEvent) {
-        // Attempt to invoke user-land function
-        // NOTE: If you are a Sentry user, and you are seeing this stack frame, it
-        //       means the sentry.javascript SDK caught an error invoking your application code. This
-        //       is expected behavior and NOT indicative of a bug with sentry.javascript.
-        return fn.handleEvent.apply(this, wrappedArguments);
-      }
       // Attempt to invoke user-land function
       // NOTE: If you are a Sentry user, and you are seeing this stack frame, it
       //       means the sentry.javascript SDK caught an error invoking your application code. This
@@ -124,7 +112,7 @@ export function wrap(
     }
   } catch (_oO) {}
 
-  fn.prototype = fn.prototype || {};
+  fn.prototype ||= {};
   sentryWrapped.prototype = fn.prototype;
 
   Object.defineProperty(fn, '__sentry_wrapped__', {
