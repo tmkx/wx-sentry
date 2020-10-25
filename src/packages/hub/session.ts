@@ -9,7 +9,6 @@ import { dropUndefinedKeys, uuid4 } from '../utils';
  * @inheritDoc
  */
 export class Session implements SessionInterface {
-  public userAgent?: string;
   public errors: number = 0;
   public release?: string;
   public sid: string = uuid4();
@@ -66,9 +65,6 @@ export class Session implements SessionInterface {
     if (context.ipAddress) {
       this.ipAddress = context.ipAddress;
     }
-    if (context.userAgent) {
-      this.userAgent = context.userAgent;
-    }
     if (typeof context.errors === 'number') {
       this.errors = context.errors;
     }
@@ -101,7 +97,6 @@ export class Session implements SessionInterface {
     attrs?: {
       release?: string;
       environment?: string;
-      user_agent?: string;
       ip_address?: string;
     };
   } {
@@ -121,7 +116,6 @@ export class Session implements SessionInterface {
         release: this.release,
         environment: this.environment,
         ip_address: this.ipAddress,
-        user_agent: this.userAgent,
       }),
     });
   }

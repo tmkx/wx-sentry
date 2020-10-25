@@ -23,7 +23,6 @@ export interface Session extends SessionContext {
     attrs?: {
       release?: string;
       environment?: string;
-      user_agent?: string;
       ip_address?: string;
     };
   };
@@ -41,7 +40,6 @@ export interface SessionContext {
   status?: SessionStatus;
   release?: string;
   environment?: string;
-  userAgent?: string;
   ipAddress?: string;
   errors?: number;
   user?: User | null;
