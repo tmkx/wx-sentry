@@ -113,30 +113,28 @@ export class Breadcrumbs implements Integration {
    * Creates breadcrumbs from wx.request API calls
    */
   private static _requestBreadcrumb(handlerData: { [key: string]: any }): void {
+    const { endTimestamp, fetchData, error, options, response } = handlerData;
     // We only capture complete requests
-    if (!handlerData.endTimestamp) {
+    if (!endTimestamp) {
       return;
     }
 
-    if (
-      handlerData.fetchData.url.match(/sentry_key/) &&
-      handlerData.fetchData.method === 'POST'
-    ) {
+    if (fetchData.url.match(/sentry_key/) && fetchData.method === 'POST') {
       // We will not create breadcrumbs for fetch requests that contain `sentry_key` (internal sentry requests)
       return;
     }
 
-    if (handlerData.error) {
+    if (error) {
       getCurrentHub().addBreadcrumb(
         {
           category: 'request',
-          data: handlerData.fetchData,
+          data: fetchData,
           level: Severity.Error,
           type: 'http',
         },
         {
-          input: handlerData.options,
-          data: handlerData.error,
+          input: options,
+          data: error,
         },
       );
     } else {
@@ -144,14 +142,14 @@ export class Breadcrumbs implements Integration {
         {
           category: 'request',
           data: {
-            ...handlerData.fetchData,
-            status_code: handlerData.response.statusCode,
+            ...fetchData,
+            status_code: response.statusCode,
           },
           type: 'http',
         },
         {
-          input: handlerData.options,
-          response: handlerData.response,
+          input: options,
+          response: response,
         },
       );
     }

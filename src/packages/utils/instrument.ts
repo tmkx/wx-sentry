@@ -8,7 +8,11 @@ interface InstrumentHandler {
   callback: InstrumentHandlerCallback;
 }
 
-type InstrumentHandlerType = 'console' | 'request' | 'error' | 'unhandledRejection';
+type InstrumentHandlerType =
+  | 'console'
+  | 'request'
+  | 'error'
+  | 'unhandledRejection';
 type InstrumentHandlerCallback = (data: any) => void;
 
 /**

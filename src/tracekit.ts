@@ -39,41 +39,16 @@ export interface StackTrace {
 // global reference to slice
 const UNKNOWN_FUNCTION = '?';
 
-// Chromium based browsers: Chrome, Brave, new Opera, new Edge
-const chrome = /^\s*at (?:(.*?) ?\()?((?:file|https?|blob|chrome-extension|address|native|eval|webpack|<anonymous>|[-a-z]+:|.*bundle|\/).*?)(?::(\d+))?(?::(\d+))?\)?\s*$/i;
-// gecko regex: `(?:bundle|\d+\.js)`: `bundle` is for react native, `\d+\.js` also but specifically for ram bundles because it
-// generates filenames without a prefix like `file://` the filenames in the stacktrace are just 42.js
-// We need this specific case for now because we want no other regex to match.
-const gecko = /^\s*(.*?)(?:\((.*?)\))?(?:^|@)?((?:file|https?|blob|chrome|webpack|resource|moz-extension|capacitor).*?:\/.*?|\[native code\]|[^@]*(?:bundle|\d+\.js))(?::(\d+))?(?::(\d+))?\s*$/i;
-const winjs = /^\s*at (?:((?:\[object object\])?.+) )?\(?((?:file|ms-appx|https?|webpack|blob):.*?):(\d+)(?::(\d+))?\)?\s*$/i;
-const geckoEval = /(\S+) line (\d+)(?: > eval line \d+)* > eval/i;
+const chrome = /^\s*at (?:(.*?) ?\()?((?:file|https?|blob|address|native|eval|webpack|<anonymous>|[-a-z]+:|.*bundle|\/).*?)(?::(\d+))?(?::(\d+))?\)?\s*$/i;
 const chromeEval = /\((\S*)(?::(\d+))(?::(\d+))\)/;
-// Based on our own mapping pattern - https://github.com/getsentry/sentry/blob/9f08305e09866c8bd6d0c24f5b0aabdd7dd6c59c/src/sentry/lang/javascript/errormapping.py#L83-L108
-const reactMinifiedRegexp = /Minified React error #\d+;/i;
 
 /** JSDoc */
 export function computeStackTrace(ex: any): StackTrace {
   let stack = null;
   let popSize = 0;
 
-  if (ex) {
-    if (typeof ex.framesToPop === 'number') {
-      popSize = ex.framesToPop;
-    } else if (reactMinifiedRegexp.test(ex.message)) {
-      popSize = 1;
-    }
-  }
-
-  try {
-    // This must be tried first because Opera 10 *destroys*
-    // its stacktrace property if you try to access the stack
-    // property first!!
-    stack = computeStackTraceFromStacktraceProp(ex);
-    if (stack) {
-      return popFrames(stack, popSize);
-    }
-  } catch (e) {
-    // no-empty
+  if (ex && typeof ex.framesToPop === 'number') {
+    popSize = ex.framesToPop;
   }
 
   try {
@@ -128,36 +103,6 @@ function computeStackTraceFromStackProp(ex: any): StackTrace | null {
         line: parts[3] ? +parts[3] : null,
         column: parts[4] ? +parts[4] : null,
       };
-    } else if ((parts = winjs.exec(lines[i]))) {
-      element = {
-        url: parts[2],
-        func: parts[1] || UNKNOWN_FUNCTION,
-        args: [],
-        line: +parts[3],
-        column: parts[4] ? +parts[4] : null,
-      };
-    } else if ((parts = gecko.exec(lines[i]))) {
-      isEval = parts[3] && parts[3].indexOf(' > eval') > -1;
-      if (isEval && (submatch = geckoEval.exec(parts[3]))) {
-        // throw out eval line/column and use top-most line number
-        parts[1] = parts[1] || `eval`;
-        parts[3] = submatch[1];
-        parts[4] = submatch[2];
-        parts[5] = ''; // no column when eval
-      } else if (i === 0 && !parts[5] && ex.columnNumber !== void 0) {
-        // FireFox uses this awesome columnNumber property for its top frame
-        // Also note, Firefox's column number is 0-based and everything else expects 1-based,
-        // so adding 1
-        // NOTE: this hack doesn't work if top-most frame is eval
-        stack[0].column = (ex.columnNumber as number) + 1;
-      }
-      element = {
-        url: parts[3],
-        func: parts[1] || UNKNOWN_FUNCTION,
-        args: parts[2] ? parts[2].split(',') : [],
-        line: parts[4] ? +parts[4] : null,
-        column: parts[5] ? +parts[5] : null,
-      };
     } else {
       continue;
     }
@@ -167,60 +112,6 @@ function computeStackTraceFromStackProp(ex: any): StackTrace | null {
     }
 
     stack.push(element);
-  }
-
-  if (!stack.length) {
-    return null;
-  }
-
-  return {
-    message: extractMessage(ex),
-    name: ex.name,
-    stack,
-  };
-}
-
-/** JSDoc */
-function computeStackTraceFromStacktraceProp(ex: any): StackTrace | null {
-  if (!ex || !ex.stacktrace) {
-    return null;
-  }
-  // Access and store the stacktrace property before doing ANYTHING
-  // else to it because Opera is not very good at providing it
-  // reliably in other circumstances.
-  const stacktrace = ex.stacktrace;
-  const opera10Regex = / line (\d+).*script (?:in )?(\S+)(?:: in function (\S+))?$/i;
-  const opera11Regex = / line (\d+), column (\d+)\s*(?:in (?:<anonymous function: ([^>]+)>|([^)]+))\((.*)\))? in (.*):\s*$/i;
-  const lines = stacktrace.split('\n');
-  const stack = [];
-  let parts;
-
-  for (let line = 0; line < lines.length; line += 2) {
-    let element = null;
-    if ((parts = opera10Regex.exec(lines[line]))) {
-      element = {
-        url: parts[2],
-        func: parts[3],
-        args: [],
-        line: +parts[1],
-        column: null,
-      };
-    } else if ((parts = opera11Regex.exec(lines[line]))) {
-      element = {
-        url: parts[6],
-        func: parts[3] || parts[4],
-        args: parts[5] ? parts[5].split(',') : [],
-        line: +parts[1],
-        column: +parts[2],
-      };
-    }
-
-    if (element) {
-      if (!element.func && element.line) {
-        element.func = UNKNOWN_FUNCTION;
-      }
-      stack.push(element);
-    }
   }
 
   if (!stack.length) {

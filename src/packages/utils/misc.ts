@@ -117,7 +117,10 @@ export function addExceptionMechanism(
   }
 }
 
-export function getCurrentPage(): WechatMiniprogram.Page.Instance<IAnyObject, IAnyObject> {
+export function getCurrentPage(): WechatMiniprogram.Page.Instance<
+  IAnyObject,
+  IAnyObject
+> {
   const pages = getCurrentPages();
   return pages[pages.length - 1];
 }

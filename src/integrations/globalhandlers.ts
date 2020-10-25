@@ -91,8 +91,7 @@ export class GlobalHandlers implements Integration {
         const client = currentHub.getClient();
         const event = GlobalHandlers._enhanceEventWithInitialFrame(
           eventFromUnknownInput(error, undefined, {
-            attachStacktrace:
-              client && client.getOptions().attachStacktrace,
+            attachStacktrace: client && client.getOptions().attachStacktrace,
             rejection: false,
           }),
           data.url,
@@ -195,15 +194,16 @@ export class GlobalHandlers implements Integration {
     line: any,
     column: any,
   ): Event {
-    event.exception ||=  {};
+    event.exception ||= {};
     event.exception.values ||= [];
-    event.exception.values[0] ||=  {};
-    event.exception.values[0].stacktrace ||=  {};
+    event.exception.values[0] ||= {};
+    event.exception.values[0].stacktrace ||= {};
     event.exception.values[0].stacktrace.frames ||= [];
 
     const colno = isNaN(parseInt(column, 10)) ? undefined : column;
     const lineno = isNaN(parseInt(line, 10)) ? undefined : line;
-    const filename = isString(url) && url.length > 0 ? url : getCurrentPageRoute();
+    const filename =
+      isString(url) && url.length > 0 ? url : getCurrentPageRoute();
     if (event.exception.values[0].stacktrace.frames.length === 0) {
       event.exception.values[0].stacktrace.frames.push({
         colno,
