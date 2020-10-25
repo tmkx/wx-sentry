@@ -98,7 +98,8 @@ export function wrap(
         captureException(ex);
       });
 
-      throw ex;
+      // 如果此处再将ex throw出去，会导致wx.onError再次上报同样的异常
+      // throw ex;
     }
   };
 

@@ -1,6 +1,6 @@
 {
   "name": "@4in/wx-sentry",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Sentry SDK for WeChat MiniApp",
   "author": "Tmk <i@tmk.im>",
   "license": "BSD-3-Clause",
