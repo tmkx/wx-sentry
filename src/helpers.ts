@@ -67,7 +67,6 @@ export function wrap(
     const args = Array.prototype.slice.call(arguments);
 
     try {
-
       const wrappedArguments = args.map((arg: any) => wrap(arg, options));
 
       // Attempt to invoke user-land function

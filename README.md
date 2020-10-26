@@ -18,7 +18,7 @@ Sentry SDK 微信小程序版，基于官方 SDK 5.27.1 版修改
 请在小程序初始化后尽早调用`Sentry.init(options)`。这将初始化 SDK 并注入到小程序环境中。你可以使用相应的选项关闭几乎所有的副作用。
 
 ```javascript
-import Sentry from '@4in/wx-sentry';
+import * as Sentry from 'wx-sentry';
 
 Sentry.init({
   dsn: '__DSN__',
@@ -26,10 +26,10 @@ Sentry.init({
 });
 ```
 
-要设置上下文信息或发送手动事件，请使用`@4in/wx-sentry`导出的函数。注意，这些在调用`Sentry.init()`之前，函数不会执行任何操作:
+要设置上下文信息或发送手动事件，请使用`wx-sentry`导出的函数。注意，这些在调用`Sentry.init()`之前，函数不会执行任何操作:
 
 ```javascript
-import * as Sentry from '@4in/wx-sentry';
+import * as Sentry from 'wx-sentry';
 
 // Set user information, as well as tags and further extras
 Sentry.configureScope((scope) => {

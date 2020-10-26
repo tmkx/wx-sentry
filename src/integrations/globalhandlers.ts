@@ -70,9 +70,7 @@ export class GlobalHandlers implements Integration {
     }
 
     addInstrumentationHandler({
-      callback: (data: {
-        error: any;
-      }) => {
+      callback: (data: { error: any }) => {
         const error = data.error;
         const currentHub = getCurrentHub();
         const hasIntegration = currentHub.getIntegration(GlobalHandlers);
@@ -86,7 +84,7 @@ export class GlobalHandlers implements Integration {
           eventFromUnknownInput(error, undefined, {
             attachStacktrace: client && client.getOptions().attachStacktrace,
             rejection: false,
-          })
+          }),
         );
 
         addExceptionMechanism(event, {
@@ -176,9 +174,7 @@ export class GlobalHandlers implements Integration {
   }
 
   /** JSDoc */
-  private static _enhanceEventWithInitialFrame(
-    event: Event,
-  ): Event {
+  private static _enhanceEventWithInitialFrame(event: Event): Event {
     event.exception ||= {};
     event.exception.values ||= [];
     event.exception.values[0] ||= {};

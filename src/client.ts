@@ -36,7 +36,7 @@ export class MiniAppClient extends BaseClient<MiniAppBackend, MiniAppOptions> {
       packages: [
         ...((event.sdk && event.sdk.packages) || []),
         {
-          name: 'npm:@4in/wx-sentry',
+          name: 'npm:wx-sentry',
           version: SDK_VERSION,
         },
       ],
