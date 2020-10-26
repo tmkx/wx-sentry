@@ -59,7 +59,7 @@ export abstract class BaseTransport implements Transport {
     result: WechatMiniprogram.RequestSuccessCallbackResult;
     headers: Record<string, string | null>;
     resolve: (
-      value?: Response | PromiseLike<Response> | null | undefined,
+      value?: Response | PromiseLike<Response>,
     ) => void;
     reject: (reason?: unknown) => void;
   }): void {

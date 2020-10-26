@@ -4,7 +4,6 @@ import {
   initAndBind,
   Integrations as CoreIntegrations,
 } from './packages/core';
-import { SyncPromise } from './packages/utils';
 
 import { MiniAppOptions } from './backend';
 import { MiniAppClient } from './client';
@@ -109,7 +108,7 @@ export function flush(timeout?: number): PromiseLike<boolean> {
   if (client) {
     return client.flush(timeout);
   }
-  return SyncPromise.reject(false);
+  return Promise.reject(false);
 }
 
 /**
@@ -123,7 +122,7 @@ export function close(timeout?: number): PromiseLike<boolean> {
   if (client) {
     return client.close(timeout);
   }
-  return SyncPromise.reject(false);
+  return Promise.reject(false);
 }
 
 /**

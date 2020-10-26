@@ -17,7 +17,6 @@ import {
   logger,
   normalize,
   SentryError,
-  SyncPromise,
   truncate,
   uuid4,
 } from '../utils';
@@ -266,7 +265,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
 
   /** Waits for the client to be done with processing. */
   protected _isClientProcessing(timeout?: number): PromiseLike<boolean> {
-    return new SyncPromise((resolve) => {
+    return new Promise((resolve) => {
       let ticked: number = 0;
       const tick: number = 1;
 
@@ -333,7 +332,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
     }
 
     // We prepare the result here with a resolved Event.
-    let result = SyncPromise.resolve<Event | null>(prepared);
+    let result: PromiseLike<Event | null> = Promise.resolve<Event | null>(prepared);
 
     // This should be the last thing called, since we want that
     // {@link Hub.addEventProcessor} gets the finished prepared event.
@@ -494,7 +493,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
    * @param event The event to send to Sentry.
    * @param hint May contain additional information about the original exception.
    * @param scope A scope containing event metadata.
-   * @returns A SyncPromise that resolves with the event or rejects in case event was/will not be send.
+   * @returns A Promise that resolves with the event or rejects in case event was/will not be send.
    */
   protected _processEvent(
     event: Event,
@@ -504,7 +503,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
     const { beforeSend, sampleRate } = this.getOptions();
 
     if (!this._isEnabled()) {
-      return SyncPromise.reject(
+      return Promise.reject(
         new SentryError('SDK not enabled, will not send event.'),
       );
     }
@@ -518,7 +517,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
       typeof sampleRate === 'number' &&
       Math.random() > sampleRate
     ) {
-      return SyncPromise.reject(
+      return Promise.reject(
         new SentryError('This event has been sampled, will not send event.'),
       );
     }

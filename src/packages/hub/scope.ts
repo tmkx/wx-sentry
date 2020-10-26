@@ -19,7 +19,6 @@ import {
   dateTimestampInSeconds,
   isPlainObject,
   isThenable,
-  SyncPromise,
 } from '../utils';
 
 import { Session } from './session';
@@ -29,7 +28,7 @@ import { Session } from './session';
  * called by the client before an event will be sent.
  */
 export class Scope implements ScopeInterface {
-  /** Flag if notifiying is happening. */
+  /** Flag if notifying is happening. */
   protected _notifyingListeners: boolean = false;
 
   /** Callback for client to receive scope changes. */
@@ -243,7 +242,7 @@ export class Scope implements ScopeInterface {
 
     // try it the new way first
     if (span?.transaction) {
-      return span?.transaction;
+      return span.transaction;
     }
 
     // fallback to the old way (known bug: this only finds transactions with sampled = true)
@@ -396,7 +395,7 @@ export class Scope implements ScopeInterface {
     }
     // We want to set the trace context for normal events only if there isn't already
     // a trace context on the event. There is a product feature in place where we link
-    // errors with transaction and it relys on that.
+    // errors with transaction and it relies on that.
     if (this._span) {
       event.contexts = {
         trace: this._span.getTraceContext(),
@@ -426,7 +425,7 @@ export class Scope implements ScopeInterface {
     hint?: EventHint,
     index: number = 0,
   ): PromiseLike<Event | null> {
-    return new SyncPromise<Event | null>((resolve, reject) => {
+    return new Promise<Event | null>((resolve, reject) => {
       const processor = processors[index];
       if (event === null || typeof processor !== 'function') {
         resolve(event);

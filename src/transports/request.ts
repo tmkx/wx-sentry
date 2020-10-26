@@ -1,6 +1,5 @@
 import { eventToSentryRequest, sessionToSentryRequest } from '../packages/core';
 import { Event, Response, SentryRequest, Session } from '../packages/types';
-import { SyncPromise } from '../packages/utils';
 
 import { BaseTransport } from './base';
 
@@ -43,7 +42,7 @@ export class RequestTransport extends BaseTransport {
     }
 
     return this._buffer.add(
-      new SyncPromise<Response>((resolve, reject) => {
+      new Promise<Response>((resolve, reject) => {
         wx.request({
           url: sentryRequest.url,
           method: 'POST',

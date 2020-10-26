@@ -81,13 +81,6 @@ export class Hub implements HubInterface {
   /**
    * @inheritDoc
    */
-  public isOlderThan(version: number): boolean {
-    return this._version < version;
-  }
-
-  /**
-   * @inheritDoc
-   */
   public bindClient(client?: Client): void {
     const top = this.getStackTop();
     top.client = client;
@@ -193,12 +186,7 @@ export class Hub implements HubInterface {
     // We don't do this in the client, as it's the lowest level API, and doing this,
     // would prevent user from having full control over direct calls.
     if (!hint) {
-      let syntheticException: Error;
-      try {
-        throw new Error(message);
-      } catch (exception) {
-        syntheticException = exception as Error;
-      }
+      const syntheticException = new Error(message);
       finalHint = {
         originalException: message,
         syntheticException,
@@ -239,8 +227,7 @@ export class Hub implements HubInterface {
 
     if (!scope || !client) return;
 
-    const { beforeBreadcrumb = null, maxBreadcrumbs = DEFAULT_BREADCRUMBS } =
-      (client.getOptions && client.getOptions()) || {};
+    const { beforeBreadcrumb = null, maxBreadcrumbs = DEFAULT_BREADCRUMBS } = client.getOptions();
 
     if (maxBreadcrumbs <= 0) return;
 
@@ -475,20 +462,13 @@ export function makeMain(hub: Hub): Hub {
 
 /**
  * Returns the default hub instance.
- *
- * If a hub is already registered in the global carrier but this module
- * contains a more recent version, it replaces the registered version.
- * Otherwise, the currently registered hub will be returned.
  */
 export function getCurrentHub(): Hub {
   // Get main carrier (global for every environment)
   const registry = getMainCarrier();
 
-  // If there's no hub, or its an old API, assign a new one
-  if (
-    !hasHubOnCarrier(registry) ||
-    getHubFromCarrier(registry).isOlderThan(API_VERSION)
-  ) {
+  // If there's no hub, assign a new one
+  if (!hasHubOnCarrier(registry)) {
     setHubOnCarrier(registry, new Hub());
   }
 

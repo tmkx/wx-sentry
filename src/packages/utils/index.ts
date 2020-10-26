@@ -10,5 +10,4 @@ export * from './path';
 export * from './promisebuffer';
 export * from './stacktrace';
 export * from './string';
-export * from './syncpromise';
 export * from './time';

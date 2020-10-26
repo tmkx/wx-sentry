@@ -6,7 +6,6 @@ import {
   isErrorEvent,
   isEvent,
   isPlainObject,
-  SyncPromise,
 } from './packages/utils';
 
 import {
@@ -37,7 +36,7 @@ export function eventFromException(
   if (hint && hint.event_id) {
     event.event_id = hint.event_id;
   }
-  return SyncPromise.resolve(event);
+  return Promise.resolve(event);
 }
 
 /**
@@ -58,7 +57,7 @@ export function eventFromMessage(
   if (hint && hint.event_id) {
     event.event_id = hint.event_id;
   }
-  return SyncPromise.resolve(event);
+  return Promise.resolve(event);
 }
 
 /**

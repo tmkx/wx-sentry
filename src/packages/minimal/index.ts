@@ -175,20 +175,6 @@ export function withScope(callback: (scope: Scope) => void): void {
 }
 
 /**
- * Calls a function on the latest client. Use this with caution, it's meant as
- * in "internal" helper so we don't need to expose every possible function in
- * the shim. It is not guaranteed that the client actually implements the
- * function.
- *
- * @param method The method to call on the client/client.
- * @param args Arguments to pass to the client/frontend.
- * @hidden
- */
-export function _callOnClient(method: string, ...args: any[]): void {
-  callOnHub<void>('_invokeClient', method, ...args);
-}
-
-/**
  * Starts a new `Transaction` and returns it. This is the entry point to manual tracing instrumentation.
  *
  * A tree structure can be built by adding child spans to the transaction, and child spans to other spans. To start a
