@@ -6,11 +6,11 @@ import {
   safeJoin,
 } from '../packages/utils';
 
-/** JSDoc */
 interface BreadcrumbsOptions {
+  sentry: boolean;
   console: boolean;
   request: boolean;
-  sentry: boolean;
+  navigation: boolean;
 }
 
 /**
@@ -28,7 +28,6 @@ export class Breadcrumbs implements Integration {
    */
   public name: string = Breadcrumbs.id;
 
-  /** JSDoc */
   private readonly _options: BreadcrumbsOptions;
 
   /**
@@ -36,9 +35,10 @@ export class Breadcrumbs implements Integration {
    */
   public constructor(options?: Partial<BreadcrumbsOptions>) {
     this._options = {
+      sentry: true,
       console: true,
       request: true,
-      sentry: true,
+      navigation: true,
       ...options,
     };
   }
@@ -68,7 +68,8 @@ export class Breadcrumbs implements Integration {
   /**
    * Instrument MiniApp built-ins breadcrumb capturing
    *  - Console API
-   *  - wx.request API
+   *  - Request API
+   *  - Navigation API
    */
   public setupOnce(): void {
     if (this._options.console) {
@@ -87,6 +88,14 @@ export class Breadcrumbs implements Integration {
         type: 'request',
       });
     }
+    if (this._options.navigation) {
+      addInstrumentationHandler({
+        callback: (arg: any) => {
+          Breadcrumbs._navigationBreadcrumb(arg);
+        },
+        type: 'navigation',
+      });
+    }
   }
 
   /**
@@ -94,10 +103,12 @@ export class Breadcrumbs implements Integration {
    */
   private static _consoleBreadcrumb(handlerData: { [key: string]: any }): void {
     const breadcrumb = {
+      type: 'console',
       category: 'console',
       data: {
-        arguments: handlerData.args,
-        logger: 'console',
+        // 有 message 字段了，这俩数据就显得有点多余...
+        // arguments: handlerData.args,
+        // logger: 'console',
       },
       level: Severity.fromString(handlerData.level),
       message: safeJoin(handlerData.args, ' '),
@@ -110,7 +121,7 @@ export class Breadcrumbs implements Integration {
   }
 
   /**
-   * Creates breadcrumbs from wx.request API calls
+   * Creates breadcrumbs from request API calls
    */
   private static _requestBreadcrumb(handlerData: { [key: string]: any }): void {
     const { endTimestamp, fetchData, error, options, response } = handlerData;
@@ -153,5 +164,23 @@ export class Breadcrumbs implements Integration {
         },
       );
     }
+  }
+
+  /**
+   * Creates breadcrumbs from navigation API calls
+   */
+  private static _navigationBreadcrumb(handlerData: {
+    type: string;
+    from: string;
+    to: string;
+  }): void {
+    getCurrentHub().addBreadcrumb({
+      type: 'navigation',
+      category: handlerData.type,
+      data: {
+        from: handlerData.from,
+        to: handlerData.to,
+      },
+    });
   }
 }

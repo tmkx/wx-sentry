@@ -15,11 +15,7 @@ import {
   Transaction,
   User,
 } from '../../packages/types';
-import {
-  dateTimestampInSeconds,
-  isPlainObject,
-  isThenable,
-} from '../utils';
+import { dateTimestampInSeconds, isPlainObject, isThenable } from '../utils';
 
 import { Session } from './session';
 

@@ -58,9 +58,7 @@ export abstract class BaseTransport implements Transport {
     requestType: SentryRequestType;
     result: WechatMiniprogram.RequestSuccessCallbackResult;
     headers: Record<string, string | null>;
-    resolve: (
-      value?: Response | PromiseLike<Response>,
-    ) => void;
+    resolve: (value?: Response | PromiseLike<Response>) => void;
     reject: (reason?: unknown) => void;
   }): void {
     const status = Status.fromHttpCode(result.statusCode);

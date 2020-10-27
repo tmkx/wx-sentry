@@ -227,7 +227,10 @@ export class Hub implements HubInterface {
 
     if (!scope || !client) return;
 
-    const { beforeBreadcrumb = null, maxBreadcrumbs = DEFAULT_BREADCRUMBS } = client.getOptions();
+    const {
+      beforeBreadcrumb = null,
+      maxBreadcrumbs = DEFAULT_BREADCRUMBS,
+    } = client.getOptions();
 
     if (maxBreadcrumbs <= 0) return;
 

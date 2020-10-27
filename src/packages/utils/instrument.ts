@@ -1,6 +1,7 @@
 import { logger } from './logger';
 import { dropUndefinedKeys, fill } from './object';
 import { getFunctionName } from './stacktrace';
+import { getCurrentPageRoute } from './misc';
 
 /** Object describing handler that will be triggered for a given `type` of instrumentation */
 interface InstrumentHandler {
@@ -11,6 +12,7 @@ interface InstrumentHandler {
 type InstrumentHandlerType =
   | 'console'
   | 'request'
+  | 'navigation'
   | 'error'
   | 'unhandledRejection';
 type InstrumentHandlerCallback = (data: any) => void;
@@ -41,6 +43,9 @@ function instrument(type: InstrumentHandlerType): void {
       break;
     case 'request':
       instrumentRequest();
+      break;
+    case 'navigation':
+      instrumentNavigation();
       break;
     case 'error':
       instrumentError();
@@ -88,7 +93,6 @@ function triggerHandlers(type: InstrumentHandlerType, data: any): void {
   }
 }
 
-/** JSDoc */
 function instrumentConsole(): void {
   ['debug', 'info', 'warn', 'error', 'log'].forEach(function (
     level: string,
@@ -109,7 +113,6 @@ function instrumentConsole(): void {
   });
 }
 
-/** JSDoc */
 function instrumentRequest(): void {
   fill(wx, 'request', function (
     originalRequest: (
@@ -163,7 +166,54 @@ function instrumentRequest(): void {
   });
 }
 
-/** JSDoc */
+function instrumentNavigation(): void {
+  fill(wx, 'navigateTo', function (
+    originalFunc: (options: WechatMiniprogram.NavigateToOption) => any,
+  ): Function {
+    return function (options: WechatMiniprogram.NavigateToOption): void {
+      triggerHandlers('navigation', {
+        type: 'navigateTo',
+        from: getCurrentPageRoute(),
+        to: options.url,
+      });
+
+      originalFunc.call(wx, options);
+    };
+  });
+
+  fill(wx, 'redirectTo', function (
+    originalFunc: (options: WechatMiniprogram.RedirectToOption) => any,
+  ): Function {
+    return function (options: WechatMiniprogram.RedirectToOption): void {
+      triggerHandlers('navigation', {
+        type: 'redirectTo',
+        from: getCurrentPageRoute(),
+        to: options.url,
+      });
+
+      originalFunc.call(wx, options);
+    };
+  });
+
+  fill(wx, 'navigateBack', function (
+    originalFunc: (options?: WechatMiniprogram.NavigateBackOption) => any,
+  ): Function {
+    return function (options?: WechatMiniprogram.NavigateBackOption): void {
+      const pages = getCurrentPages();
+      const delta = Math.min(options?.delta || 1, pages.length - 1);
+      const targetPage = pages[pages.length - delta - 1];
+
+      triggerHandlers('navigation', {
+        type: 'navigateBack',
+        from: getCurrentPageRoute(),
+        to: targetPage.route,
+      });
+
+      originalFunc.call(wx, options);
+    };
+  });
+}
+
 function instrumentError(): void {
   wx.onError((stack) => {
     const [name, message] = stack.split(`\n`);
@@ -174,7 +224,6 @@ function instrumentError(): void {
   });
 }
 
-/** JSDoc */
 function instrumentUnhandledRejection(): void {
   wx.onUnhandledRejection(({ reason, promise }) => {
     // @ts-ignore

@@ -56,8 +56,8 @@ export function eventFromPlainObject(
             : rejection
             ? 'UnhandledRejection'
             : 'Error',
-          value: `Non-Error ${
-            rejection ? 'promise rejection' : 'exception'
+          value: `${
+            rejection ? 'Promise rejection' : 'Exception'
           } captured with keys: ${extractExceptionKeysForMessage(exception)}`,
         },
       ],

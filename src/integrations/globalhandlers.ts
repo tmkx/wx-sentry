@@ -166,7 +166,7 @@ export class GlobalHandlers implements Integration {
         values: [
           {
             type: 'UnhandledRejection',
-            value: `Non-Error promise rejection captured with value: ${error}`,
+            value: `Promise rejection captured with value: ${error}`,
           },
         ],
       },

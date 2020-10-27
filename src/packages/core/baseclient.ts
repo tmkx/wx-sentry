@@ -332,7 +332,9 @@ export abstract class BaseClient<B extends Backend, O extends Options>
     }
 
     // We prepare the result here with a resolved Event.
-    let result: PromiseLike<Event | null> = Promise.resolve<Event | null>(prepared);
+    let result: PromiseLike<Event | null> = Promise.resolve<Event | null>(
+      prepared,
+    );
 
     // This should be the last thing called, since we want that
     // {@link Hub.addEventProcessor} gets the finished prepared event.
