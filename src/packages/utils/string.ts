@@ -1,4 +1,5 @@
 import { isRegExp, isString } from './is';
+import { normalizeToSize } from './object';
 
 /**
  * Truncates given string to the maximum characters count
@@ -26,7 +27,7 @@ export function safeJoin(input: any[], delimiter?: string): string {
   for (let i = 0; i < input.length; i++) {
     const value = input[i];
     try {
-      output.push(JSON.stringify(value));
+      output.push(normalizeToSize(value));
     } catch (e) {
       output.push('[value cannot be serialized]');
     }

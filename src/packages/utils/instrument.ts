@@ -167,32 +167,20 @@ function instrumentRequest(): void {
 }
 
 function instrumentNavigation(): void {
-  fill(wx, 'navigateTo', function (
-    originalFunc: (options: WechatMiniprogram.NavigateToOption) => any,
-  ): Function {
-    return function (options: WechatMiniprogram.NavigateToOption): void {
-      triggerHandlers('navigation', {
-        type: 'navigateTo',
-        from: getCurrentPageRoute(),
-        to: options.url,
-      });
+  ['navigateTo', 'redirectTo', 'switchTab'].forEach(navigateFunc => {
+    fill(wx, navigateFunc, function (
+      originalFunc: (options: any) => any,
+    ): Function {
+      return function (options: any): void {
+        triggerHandlers('navigation', {
+          type: navigateFunc,
+          from: getCurrentPageRoute(),
+          to: options.url,
+        });
 
-      originalFunc.call(wx, options);
-    };
-  });
-
-  fill(wx, 'redirectTo', function (
-    originalFunc: (options: WechatMiniprogram.RedirectToOption) => any,
-  ): Function {
-    return function (options: WechatMiniprogram.RedirectToOption): void {
-      triggerHandlers('navigation', {
-        type: 'redirectTo',
-        from: getCurrentPageRoute(),
-        to: options.url,
-      });
-
-      originalFunc.call(wx, options);
-    };
+        originalFunc.call(wx, options);
+      };
+    });
   });
 
   fill(wx, 'navigateBack', function (

@@ -283,17 +283,27 @@ export class Scope implements ScopeInterface {
       return updatedScope instanceof Scope ? updatedScope : this;
     }
 
+    // TODO: good good see see
     if (captureContext instanceof Scope) {
+      // @ts-ignore
       this._tags = { ...this._tags, ...captureContext._tags };
+      // @ts-ignore
       this._extra = { ...this._extra, ...captureContext._extra };
+      // @ts-ignore
       this._contexts = { ...this._contexts, ...captureContext._contexts };
+      // @ts-ignore
       if (captureContext._user && Object.keys(captureContext._user).length) {
+        // @ts-ignore
         this._user = captureContext._user;
       }
+      // @ts-ignore
       if (captureContext._level) {
+        // @ts-ignore
         this._level = captureContext._level;
       }
+      // @ts-ignore
       if (captureContext._fingerprint) {
+        // @ts-ignore
         this._fingerprint = captureContext._fingerprint;
       }
     } else if (isPlainObject(captureContext)) {
