@@ -1,6 +1,6 @@
 {
   "name": "wx-sentry",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Sentry SDK for WeChat MiniApp",
   "keywords": [
     "wx",
