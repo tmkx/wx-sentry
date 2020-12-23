@@ -33,9 +33,13 @@ export abstract class BaseTransport implements Transport {
    * @inheritDoc
    */
   public sendEvent(_: Event): PromiseLike<Response> {
-    throw new SentryError(
-      'Transport Class has to implement `sendEvent` method',
-    );
+    if (__LOG__) {
+      throw new SentryError(
+        'Transport Class has to implement `sendEvent` method',
+      );
+    } else {
+      throw new SentryError('');
+    }
   }
 
   /**
@@ -67,12 +71,14 @@ export abstract class BaseTransport implements Transport {
      * https://developer.mozilla.org/en-US/docs/Web/API/Headers/get
      */
     const limited = this._handleRateLimit(headers);
-    if (limited)
-      logger.warn(
-        `Too many requests, backing off till: ${this._disabledUntil(
-          requestType,
-        )}`,
-      );
+    if (__LOG__) {
+      if (limited)
+        logger.warn(
+          `Too many requests, backing off till: ${this._disabledUntil(
+            requestType,
+          )}`,
+        );
+    }
 
     if (status === Status.Success) {
       resolve({ status });

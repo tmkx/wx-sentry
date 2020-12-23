@@ -53,12 +53,16 @@ export class GlobalHandlers implements Integration {
     Error.stackTraceLimit = 50;
 
     if (this._options.onError) {
-      logger.log('Global Handler attached: onError');
+      if (__LOG__) {
+        logger.log('Global Handler attached: onError');
+      }
       this._installGlobalOnErrorHandler();
     }
 
     if (this._options.onUnhandledRejection) {
-      logger.log('Global Handler attached: onUnhandledRejection');
+      if (__LOG__) {
+        logger.log('Global Handler attached: onUnhandledRejection');
+      }
       this._installGlobalOnUnhandledRejectionHandler();
     }
   }

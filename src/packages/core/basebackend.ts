@@ -8,8 +8,6 @@ import {
 } from '../types';
 import { logger, SentryError } from '../utils';
 
-import { NoopTransport } from './transports/noop';
-
 /**
  * Internal platform-dependent Sentry SDK Backend.
  *
@@ -65,7 +63,7 @@ export type BackendClass<B extends Backend, O extends Options> = new (
 ) => B;
 
 /**
- * This is the base implemention of a Backend.
+ * This is the base implementation of a Backend.
  * @hidden
  */
 export abstract class BaseBackend<O extends Options> implements Backend {
@@ -78,8 +76,10 @@ export abstract class BaseBackend<O extends Options> implements Backend {
   /** Creates a new backend instance. */
   public constructor(options: O) {
     this._options = options;
-    if (!this._options.dsn) {
-      logger.warn('No DSN provided, backend will not do anything.');
+    if (__LOG__) {
+      if (!this._options.dsn) {
+        logger.warn('No DSN provided, backend will not do anything.');
+      }
     }
     this._transport = this._setupTransport();
   }
@@ -91,9 +91,13 @@ export abstract class BaseBackend<O extends Options> implements Backend {
     _exception: any,
     _hint?: EventHint,
   ): PromiseLike<Event> {
-    throw new SentryError(
-      'Backend has to implement `eventFromException` method',
-    );
+    if (__LOG__) {
+      throw new SentryError(
+        'Backend has to implement `eventFromException` method',
+      );
+    } else {
+      throw new SentryError('');
+    }
   }
 
   /**
@@ -104,7 +108,11 @@ export abstract class BaseBackend<O extends Options> implements Backend {
     _level?: Severity,
     _hint?: EventHint,
   ): PromiseLike<Event> {
-    throw new SentryError('Backend has to implement `eventFromMessage` method');
+    if (__LOG__) {
+      throw new SentryError('Backend has to implement `eventFromMessage` method');
+    } else {
+      throw new SentryError('');
+    }
   }
 
   /**
@@ -112,7 +120,9 @@ export abstract class BaseBackend<O extends Options> implements Backend {
    */
   public sendEvent(event: Event): void {
     this._transport.sendEvent(event).then(null, (reason) => {
-      logger.error(`Error while sending event: ${reason}`);
+      if (__LOG__) {
+        logger.error(`Error while sending event: ${reason}`);
+      }
     });
   }
 
@@ -121,14 +131,18 @@ export abstract class BaseBackend<O extends Options> implements Backend {
    */
   public sendSession(session: Session): void {
     if (!this._transport.sendSession) {
-      logger.warn(
-        "Dropping session because custom transport doesn't implement sendSession",
-      );
+      if (__LOG__) {
+        logger.warn(
+          "Dropping session because custom transport doesn't implement sendSession",
+        );
+      }
       return;
     }
 
     this._transport.sendSession(session).then(null, (reason) => {
-      logger.error(`Error while sending session: ${reason}`);
+      if (__LOG__) {
+        logger.error(`Error while sending session: ${reason}`);
+      }
     });
   }
 
@@ -143,6 +157,6 @@ export abstract class BaseBackend<O extends Options> implements Backend {
    * Sets up the transport so it can be used later to send requests.
    */
   protected _setupTransport(): Transport {
-    return new NoopTransport();
+    return null as unknown as Transport;
   }
 }

@@ -54,7 +54,9 @@ function instrument(type: InstrumentHandlerType): void {
       instrumentUnhandledRejection();
       break;
     default:
-      logger.warn('unknown instrumentation type:', type);
+      if (__LOG__) {
+        logger.warn('unknown instrumentation type:', type);
+      }
   }
 }
 
@@ -84,11 +86,13 @@ function triggerHandlers(type: InstrumentHandlerType, data: any): void {
     try {
       handler(data);
     } catch (e) {
-      logger.error(
-        `Error while triggering instrumentation handler.\nType: ${type}\nName: ${getFunctionName(
-          handler,
-        )}\nError: ${e}`,
-      );
+      if (__LOG__) {
+        logger.error(
+          `Error while triggering instrumentation handler.\nType: ${type}\nName: ${getFunctionName(
+            handler,
+          )}\nError: ${e}`,
+        );
+      }
     }
   }
 }
@@ -101,105 +105,117 @@ function instrumentConsole(): void {
       return;
     }
 
-    fill(console, level, function (
-      originalConsoleLevel: (...args: any[]) => any,
-    ): Function {
-      return function (...args: any[]): void {
-        triggerHandlers('console', { args, level });
+    fill(
+      console,
+      level,
+      function (originalConsoleLevel: (...args: any[]) => any): Function {
+        return function (...args: any[]): void {
+          triggerHandlers('console', { args, level });
 
-        originalConsoleLevel.apply(console, args);
-      };
-    });
+          originalConsoleLevel.apply(console, args);
+        };
+      },
+    );
   });
 }
 
 function instrumentRequest(): void {
-  fill(wx, 'request', function (
-    originalRequest: (
-      options: WechatMiniprogram.RequestOption,
-    ) => PromiseLike<any>,
-  ) {
-    return function (
-      options: WechatMiniprogram.RequestOption,
-    ): PromiseLike<any> {
-      const {
-        success,
-        fail,
-        complete,
-        method,
-        url,
-        data,
-        ...restOptions
-      } = options;
-      const handlerData = {
-        options: restOptions,
-        fetchData: dropUndefinedKeys({
-          method: (method || 'GET').toUpperCase(),
+  fill(
+    wx,
+    'request',
+    function (
+      originalRequest: (
+        options: WechatMiniprogram.RequestOption,
+      ) => PromiseLike<any>,
+    ) {
+      return function (
+        options: WechatMiniprogram.RequestOption,
+      ): PromiseLike<any> {
+        const {
+          success,
+          fail,
+          complete,
+          method,
           url,
           data,
-        }),
-        startTimestamp: Date.now(),
+          ...restOptions
+        } = options;
+        const handlerData = {
+          options: restOptions,
+          fetchData: dropUndefinedKeys({
+            method: (method || 'GET').toUpperCase(),
+            url,
+            data,
+          }),
+          startTimestamp: Date.now(),
+        };
+        triggerHandlers('request', {
+          ...handlerData,
+        });
+        return originalRequest.call(wx, {
+          ...options,
+          success(response: WechatMiniprogram.RequestSuccessCallbackResult) {
+            triggerHandlers('request', {
+              ...handlerData,
+              endTimestamp: Date.now(),
+              response,
+            });
+            success?.(response);
+          },
+          fail(error: WechatMiniprogram.GeneralCallbackResult) {
+            triggerHandlers('request', {
+              ...handlerData,
+              endTimestamp: Date.now(),
+              error,
+            });
+            fail?.(error);
+          },
+        });
       };
-      triggerHandlers('request', {
-        ...handlerData,
-      });
-      return originalRequest.call(wx, {
-        ...options,
-        success(response: WechatMiniprogram.RequestSuccessCallbackResult) {
-          triggerHandlers('request', {
-            ...handlerData,
-            endTimestamp: Date.now(),
-            response,
-          });
-          success?.(response);
-        },
-        fail(error: WechatMiniprogram.GeneralCallbackResult) {
-          triggerHandlers('request', {
-            ...handlerData,
-            endTimestamp: Date.now(),
-            error,
-          });
-          fail?.(error);
-        },
-      });
-    };
-  });
+    },
+  );
 }
 
 function instrumentNavigation(): void {
-  ['navigateTo', 'redirectTo', 'switchTab'].forEach(navigateFunc => {
-    fill(wx, navigateFunc, function (
-      originalFunc: (options: any) => any,
+  ['navigateTo', 'redirectTo', 'switchTab'].forEach((navigateFunc) => {
+    fill(
+      wx,
+      navigateFunc,
+      function (originalFunc: (options: any) => any): Function {
+        return function (options: any): void {
+          triggerHandlers('navigation', {
+            type: navigateFunc,
+            from: getCurrentPageRoute(),
+            to: options.url,
+          });
+
+          originalFunc.call(wx, options);
+        };
+      },
+    );
+  });
+
+  fill(
+    wx,
+    'navigateBack',
+    function (
+      originalFunc: (options?: WechatMiniprogram.NavigateBackOption) => any,
     ): Function {
-      return function (options: any): void {
+      return function (options?: WechatMiniprogram.NavigateBackOption): void {
+        const pages = getCurrentPages();
+        const delta = Math.min(options?.delta || 1, pages.length - 1);
+        const targetPage = pages[pages.length - delta - 1];
+
         triggerHandlers('navigation', {
-          type: navigateFunc,
+          type: 'navigateBack',
           from: getCurrentPageRoute(),
-          to: options.url,
+          to: targetPage.route,
         });
 
         originalFunc.call(wx, options);
       };
-    });
-  });
-
-  fill(wx, 'navigateBack', function (
-    originalFunc: (options?: WechatMiniprogram.NavigateBackOption) => any,
-  ): Function {
-    return function (options?: WechatMiniprogram.NavigateBackOption): void {
-      const pages = getCurrentPages();
-      const delta = Math.min(options?.delta || 1, pages.length - 1);
-      const targetPage = pages[pages.length - delta - 1];
-
-      triggerHandlers('navigation', {
-        type: 'navigateBack',
-        from: getCurrentPageRoute(),
-        to: targetPage.route,
-      });
-
-      originalFunc.call(wx, options);
-    };
-  });
+    },
+  );
 }
 
 function instrumentError(): void {

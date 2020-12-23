@@ -23,7 +23,7 @@ export interface Options {
    * The Dsn used to connect to Sentry and identify the project. If omitted, the
    * SDK will not send any data to Sentry.
    */
-  dsn?: string;
+  dsn: string;
 
   /**
    * If this is set to false, default integrations will not be added, otherwise this will internally be set to the
@@ -45,11 +45,6 @@ export interface Options {
    * By default, all errors will be sent.
    */
   ignoreErrors?: Array<string | RegExp>;
-
-  /**
-   * Transport object that should be used to send events to Sentry
-   */
-  transport?: TransportClass<Transport>;
 
   /**
    * Options for the default transport that the SDK uses.
@@ -165,6 +160,7 @@ export interface Options {
    * Returning null will cause the breadcrumb to be dropped.
    *
    * @param breadcrumb The breadcrumb as created by the SDK.
+   * @param hint
    * @returns The breadcrumb that will be added | null.
    */
   beforeBreadcrumb?(

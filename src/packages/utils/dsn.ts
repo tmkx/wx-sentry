@@ -95,37 +95,35 @@ export class Dsn implements DsnComponents {
 
   /** Maps Dsn components into this instance. */
   private _fromComponents(components: DsnComponents): void {
-    this.protocol = components.protocol;
-    this.user = components.user;
-    this.pass = components.pass || '';
-    this.host = components.host;
-    this.port = components.port || '';
-    this.path = components.path || '';
-    this.projectId = components.projectId;
+    (['protocol', 'user', 'pass', 'host', 'port', 'path', 'projectId'] as Array<keyof DsnComponents & DsnProtocol>).forEach(key => {
+      this[key] = components[key] || '';
+    });
   }
 
   /** Validates this Dsn and throws on error. */
   private _validate(): void {
-    ['protocol', 'user', 'host', 'projectId'].forEach((component) => {
-      if (!this[component as keyof DsnComponents]) {
-        throw new SentryError(`${ERROR_MESSAGE}: ${component} missing`);
+    if (__LOG__) {
+      ['protocol', 'user', 'host', 'projectId'].forEach((component) => {
+        if (!this[component as keyof DsnComponents]) {
+          throw new SentryError(`${ERROR_MESSAGE}: ${component} missing`);
+        }
+      });
+
+      if (!this.projectId.match(/^\d+$/)) {
+        throw new SentryError(
+          `${ERROR_MESSAGE}: Invalid projectId ${this.projectId}`,
+        );
       }
-    });
 
-    if (!this.projectId.match(/^\d+$/)) {
-      throw new SentryError(
-        `${ERROR_MESSAGE}: Invalid projectId ${this.projectId}`,
-      );
-    }
+      if (this.protocol !== 'http' && this.protocol !== 'https') {
+        throw new SentryError(
+          `${ERROR_MESSAGE}: Invalid protocol ${this.protocol}`,
+        );
+      }
 
-    if (this.protocol !== 'http' && this.protocol !== 'https') {
-      throw new SentryError(
-        `${ERROR_MESSAGE}: Invalid protocol ${this.protocol}`,
-      );
-    }
-
-    if (this.port && isNaN(parseInt(this.port, 10))) {
-      throw new SentryError(`${ERROR_MESSAGE}: Invalid port ${this.port}`);
+      if (this.port && isNaN(parseInt(this.port, 10))) {
+        throw new SentryError(`${ERROR_MESSAGE}: Invalid port ${this.port}`);
+      }
     }
   }
 }

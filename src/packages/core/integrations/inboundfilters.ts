@@ -15,11 +15,6 @@ interface InboundFiltersOptions {
   denyUrls: Array<string | RegExp>;
   ignoreErrors: Array<string | RegExp>;
   ignoreInternal: boolean;
-
-  /** @deprecated use {@link InboundFiltersOptions.allowUrls} instead. */
-  whitelistUrls: Array<string | RegExp>;
-  /** @deprecated use {@link InboundFiltersOptions.denyUrls} instead. */
-  blacklistUrls: Array<string | RegExp>;
 }
 
 /** Inbound filters configurable by the user */
@@ -66,35 +61,43 @@ export class InboundFilters implements Integration {
     options: Partial<InboundFiltersOptions>,
   ): boolean {
     if (InboundFilters._isSentryError(event, options)) {
-      logger.warn(
-        `Event dropped due to being internal Sentry Error.\nEvent: ${getEventDescription(
-          event,
-        )}`,
-      );
+      if (__LOG__) {
+        logger.warn(
+          `Event dropped due to being internal Sentry Error.\nEvent: ${getEventDescription(
+            event,
+          )}`,
+        );
+      }
       return true;
     }
     if (this._isIgnoredError(event, options)) {
-      logger.warn(
-        `Event dropped due to being matched by \`ignoreErrors\` option.\nEvent: ${getEventDescription(
-          event,
-        )}`,
-      );
+      if (__LOG__) {
+        logger.warn(
+          `Event dropped due to being matched by \`ignoreErrors\` option.\nEvent: ${getEventDescription(
+            event,
+          )}`,
+        );
+      }
       return true;
     }
     if (this._isDeniedUrl(event, options)) {
-      logger.warn(
-        `Event dropped due to being matched by \`denyUrls\` option.\nEvent: ${getEventDescription(
-          event,
-        )}.\nUrl: ${InboundFilters._getEventFilterUrl(event)}`,
-      );
+      if (__LOG__) {
+        logger.warn(
+          `Event dropped due to being matched by \`denyUrls\` option.\nEvent: ${getEventDescription(
+            event,
+          )}.\nUrl: ${InboundFilters._getEventFilterUrl(event)}`,
+        );
+      }
       return true;
     }
     if (!this._isAllowedUrl(event, options)) {
-      logger.warn(
-        `Event dropped due to not being matched by \`allowUrls\` option.\nEvent: ${getEventDescription(
-          event,
-        )}.\nUrl: ${InboundFilters._getEventFilterUrl(event)}`,
-      );
+      if (__LOG__) {
+        logger.warn(
+          `Event dropped due to not being matched by \`allowUrls\` option.\nEvent: ${getEventDescription(
+            event,
+          )}.\nUrl: ${InboundFilters._getEventFilterUrl(event)}`,
+        );
+      }
       return true;
     }
     return false;
@@ -110,14 +113,7 @@ export class InboundFilters implements Integration {
     }
 
     try {
-      return (
-        (event &&
-          event.exception &&
-          event.exception.values &&
-          event.exception.values[0] &&
-          event.exception.values[0].type === 'SentryError') ||
-        false
-      );
+      return (event!.exception!.values![0]!.type === 'SentryError');
     } catch (_oO) {
       return false;
     }
@@ -175,15 +171,11 @@ export class InboundFilters implements Integration {
   ): Partial<InboundFiltersOptions> {
     return {
       allowUrls: [
-        ...(this._options.whitelistUrls || []),
         ...(this._options.allowUrls || []),
-        ...(clientOptions.whitelistUrls || []),
         ...(clientOptions.allowUrls || []),
       ],
       denyUrls: [
-        ...(this._options.blacklistUrls || []),
         ...(this._options.denyUrls || []),
-        ...(clientOptions.blacklistUrls || []),
         ...(clientOptions.denyUrls || []),
       ],
       ignoreErrors: [
@@ -209,9 +201,11 @@ export class InboundFilters implements Integration {
           (event.exception.values && event.exception.values[0]) || {};
         return [`${value}`, `${type}: ${value}`];
       } catch (oO) {
-        logger.error(
-          `Cannot extract message for event ${getEventDescription(event)}`,
-        );
+        if (__LOG__) {
+          logger.error(
+            `Cannot extract message for event ${getEventDescription(event)}`,
+          );
+        }
         return [];
       }
     }
@@ -234,9 +228,11 @@ export class InboundFilters implements Integration {
       }
       return null;
     } catch (oO) {
-      logger.error(
-        `Cannot extract url for event ${getEventDescription(event)}`,
-      );
+      if (__LOG__) {
+        logger.error(
+          `Cannot extract url for event ${getEventDescription(event)}`,
+        );
+      }
       return null;
     }
   }

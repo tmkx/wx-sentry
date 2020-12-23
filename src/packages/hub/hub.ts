@@ -334,9 +334,11 @@ export class Hub implements HubInterface {
     try {
       return client.getIntegration(integration);
     } catch (_oO) {
-      logger.warn(
-        `Cannot retrieve integration ${integration.id} from the current Hub`,
-      );
+      if (__LOG__) {
+        logger.warn(
+          `Cannot retrieve integration ${integration.id} from the current Hub`,
+        );
+      }
       return null;
     }
   }
@@ -437,7 +439,9 @@ export class Hub implements HubInterface {
     ) {
       return sentry.extensions[method].apply(this, args);
     }
-    logger.warn(`Extension method ${method} couldn't be found, doing nothing.`);
+    if (__LOG__) {
+      logger.warn(`Extension method ${method} couldn't be found, doing nothing.`);
+    }
   }
 }
 

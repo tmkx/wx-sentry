@@ -35,7 +35,7 @@ export function fill(
   // otherwise it'll throw "TypeError: Object.defineProperties called on non-object"
   if (typeof wrapped === 'function') {
     try {
-      wrapped.prototype = wrapped.prototype || {};
+      wrapped.prototype ||= {};
       Object.defineProperties(wrapped, {
         __sentry_original__: {
           enumerable: false,

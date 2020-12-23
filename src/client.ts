@@ -17,7 +17,7 @@ export class MiniAppClient extends BaseClient<MiniAppBackend, MiniAppOptions> {
    *
    * @param options Configuration options for this SDK.
    */
-  public constructor(options: MiniAppOptions = {}) {
+  public constructor(options: MiniAppOptions) {
     super(MiniAppBackend, options);
   }
 

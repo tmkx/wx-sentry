@@ -126,7 +126,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
     let eventId: string | undefined = hint && hint.event_id;
 
     const promisedEvent = isPrimitive(message)
-      ? this._getBackend().eventFromMessage(`${message}`, level, hint)
+      ? this._getBackend().eventFromMessage(String(message), level, hint)
       : this._getBackend().eventFromException(message, hint);
 
     this._process(
@@ -164,7 +164,9 @@ export abstract class BaseClient<B extends Backend, O extends Options>
    */
   public captureSession(session: Session): void {
     if (!session.release) {
-      logger.warn('Discarded session because of missing release');
+      if (__LOG__) {
+        logger.warn('Discarded session because of missing release');
+      }
     } else {
       this._sendSession(session);
     }
@@ -224,9 +226,11 @@ export abstract class BaseClient<B extends Backend, O extends Options>
     try {
       return (this._integrations[integration.id] as T) || null;
     } catch (_oO) {
-      logger.warn(
-        `Cannot retrieve integration ${integration.id} from the current Client`,
-      );
+      if (__LOG__) {
+        logger.warn(
+          `Cannot retrieve integration ${integration.id} from the current Client`,
+        );
+      }
       return null;
     }
   }
@@ -414,7 +418,7 @@ export abstract class BaseClient<B extends Backend, O extends Options>
       maxValueLength = 250,
     } = this.getOptions();
 
-    if (event.environment === undefined && environment !== undefined) {
+    if (!('environment' in event)) {
       event.environment = environment;
     }
 
@@ -478,7 +482,9 @@ export abstract class BaseClient<B extends Backend, O extends Options>
         return finalEvent.event_id;
       },
       (reason) => {
-        logger.error(reason);
+        if (__LOG__) {
+          logger.error(reason);
+        }
         return undefined;
       },
     );

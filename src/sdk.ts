@@ -43,7 +43,7 @@ export const defaultReportSystemInfos = [
  *
  * @see {@link MiniAppOptions} for documentation on configuration options.
  */
-export function init(options: MiniAppOptions = {}): void {
+export function init(options: MiniAppOptions): void {
   if (options.defaultIntegrations === undefined) {
     options.defaultIntegrations = defaultIntegrations;
   }
@@ -152,9 +152,12 @@ function startSessionTracking(): void {
   hub.startSession();
 
   try {
-    // TODO: Performance measurement
-    fcpResolved = true;
-    possiblyEndSession();
+    const observer = wx.getPerformance().createObserver(() => {
+      fcpResolved = true;
+      possiblyEndSession();
+      observer.disconnect();
+    });
+    observer.observe({ entryTypes: ['render'] });
   } catch (e) {
     fcpResolved = true;
     possiblyEndSession();

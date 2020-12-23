@@ -26,6 +26,5 @@ export { BaseClient } from './baseclient';
 export { BackendClass, BaseBackend } from './basebackend';
 export { eventToSentryRequest, sessionToSentryRequest } from './request';
 export { initAndBind, ClientClass } from './sdk';
-export { NoopTransport } from './transports/noop';
 
 export * as Integrations from './integrations';

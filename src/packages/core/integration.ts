@@ -63,7 +63,9 @@ export function setupIntegration(integration: Integration): void {
   }
   integration.setupOnce(addGlobalEventProcessor, getCurrentHub);
   installedIntegrations.push(integration.name);
-  logger.log(`Integration installed: ${integration.name}`);
+  if (__LOG__) {
+    logger.log(`Integration installed: ${integration.name}`);
+  }
 }
 
 /**

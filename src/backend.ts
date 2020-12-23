@@ -29,12 +29,6 @@ export interface MiniAppOptions extends Options {
    */
   denyUrls?: Array<string | RegExp>;
 
-  /** @deprecated use {@link Options.allowUrls} instead. */
-  whitelistUrls?: Array<string | RegExp>;
-
-  /** @deprecated use {@link Options.denyUrls} instead. */
-  blacklistUrls?: Array<string | RegExp>;
-
   /**
    * A flag enabling Sessions Tracking feature.
    * By default Sessions Tracking is disabled.
@@ -76,20 +70,9 @@ export class MiniAppBackend extends BaseBackend<MiniAppOptions> {
    * @inheritDoc
    */
   protected _setupTransport(): Transport {
-    if (!this._options.dsn) {
-      // We return the noop transport here in case there is no Dsn.
-      return super._setupTransport();
-    }
-
-    const transportOptions = {
+    return new RequestTransport({
       ...this._options.transportOptions,
-      dsn: this._options.dsn,
-    };
-
-    if (this._options.transport) {
-      return new this._options.transport(transportOptions);
-    }
-
-    return new RequestTransport(transportOptions);
+      dsn: this._options.dsn!,
+    });
   }
 }

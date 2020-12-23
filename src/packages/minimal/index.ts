@@ -22,9 +22,13 @@ function callOnHub<T>(method: string, ...args: any[]): T {
   if (hub && hub[method as keyof Hub]) {
     return (hub[method as keyof Hub] as any)(...args);
   }
-  throw new Error(
-    `No hub defined or ${method} was not found on the hub, please open a bug report.`,
-  );
+  if (__LOG__) {
+    throw Error(
+      `No hub defined or ${method} was not found on the hub, please open a bug report.`,
+    );
+  } else {
+    throw Error();
+  }
 }
 
 /**

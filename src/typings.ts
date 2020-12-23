@@ -12,6 +12,8 @@ interface ErrorConstructor {
   stackTraceLimit: number;
 }
 
+declare const __LOG__: boolean;
+
 declare namespace WechatMiniprogram {
   interface Wx {
     Sentry?: {
